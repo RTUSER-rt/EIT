@@ -1,0 +1,1993 @@
+<!DOCTYPE html>
+
+<html lang="zh-TW">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>EIT 引導 PEEP Titration</title>
+
+<style>
+
+  :root {
+
+    --bg:       #ffffff;
+
+    --bg2:      #f8f9fa;
+
+    --bg3:      #f1f3f5;
+
+    --border:   #e4e7ec;
+
+    --border2:  #d0d5dd;
+
+    --text:     #111827;
+
+    --text2:    #6b7280;
+
+    --text3:    #9ca3af;
+
+    --accent:         #1d4ed8;
+
+    --accent-light:   #eff6ff;
+
+    --accent-border:  #bfdbfe;
+
+    --accent-text:    #1e40af;
+
+    --green:          #059669;
+
+    --green-light:    #ecfdf5;
+
+    --green-border:   #a7f3d0;
+
+    --green-text:     #065f46;
+
+    --amber:          #d97706;
+
+    --amber-light:    #fffbeb;
+
+    --amber-border:   #fcd34d;
+
+    --amber-text:     #92400e;
+
+    --red:            #dc2626;
+
+    --red-light:      #fef2f2;
+
+    --red-border:     #fecaca;
+
+    --red-text:       #991b1b;
+
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+
+    background: var(--bg2);
+
+    color: var(--text);
+
+    font-family: -apple-system, 'Helvetica Neue', sans-serif;
+
+    font-size: 15px;
+
+    line-height: 1.6;
+
+    min-height: 100vh;
+
+  }
+
+  .page-header {
+
+    background: var(--bg);
+
+    border-bottom: 1px solid var(--border);
+
+    padding: 16px 24px;
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 100;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+  }
+
+  .header-icon {
+
+    width: 34px; height: 34px;
+
+    background: var(--accent-light);
+
+    border: 1px solid var(--accent-border);
+
+    border-radius: 8px;
+
+    display: flex; align-items: center; justify-content: center;
+
+    font-size: 16px;
+
+    flex-shrink: 0;
+
+  }
+
+  .header-title { font-size: 16px; font-weight: 600; color: var(--text); }
+
+  .header-sub { font-size: 12px; color: var(--text2); }
+
+  .header-badge {
+
+    margin-left: auto;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    color: var(--accent-text);
+
+    background: var(--accent-light);
+
+    border: 1px solid var(--accent-border);
+
+    border-radius: 20px;
+
+    padding: 3px 10px;
+
+  }
+
+  .progress-bar { height: 3px; background: var(--border); }
+
+  .progress-fill { height: 100%; background: var(--accent); transition: width 0.35s ease; width: 0%; }
+
+  .main { max-width: 680px; margin: 0 auto; padding: 24px 16px 80px; }
+
+  .step-block {
+
+    background: var(--bg);
+
+    border: 1px solid var(--border);
+
+    border-radius: 12px;
+
+    margin-bottom: 16px;
+
+    overflow: hidden;
+
+  }
+
+  .step-header {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 16px 20px;
+
+    border-bottom: 1px solid var(--border);
+
+    background: var(--bg);
+
+  }
+
+  .step-badge {
+
+    width: 30px; height: 30px;
+
+    border-radius: 7px;
+
+    display: flex; align-items: center; justify-content: center;
+
+    font-size: 11px; font-weight: 700;
+
+    flex-shrink: 0;
+
+    background: var(--accent-light);
+
+    border: 1px solid var(--accent-border);
+
+    color: var(--accent-text);
+
+    letter-spacing: 0.3px;
+
+  }
+
+  .step-badge.prep {
+
+    background: var(--bg3);
+
+    border-color: var(--border2);
+
+    color: var(--text2);
+
+  }
+
+  .step-title { font-size: 14px; font-weight: 600; color: var(--text); }
+
+  .step-desc { font-size: 12px; color: var(--text2); margin-top: 1px; }
+
+  .step-body { padding: 20px; }
+
+  .mode-box {
+
+    background: var(--bg3);
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    padding: 12px 14px;
+
+    font-size: 13px;
+
+    color: var(--text2);
+
+    line-height: 2;
+
+    margin-bottom: 16px;
+
+  }
+
+  .mode-box .param { color: var(--text); font-weight: 600; }
+
+  .mode-box .lbl { color: var(--text3); }
+
+  .field { margin-bottom: 14px; }
+
+  .field-label {
+
+    display: block;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    color: var(--text2);
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.6px;
+
+    margin-bottom: 6px;
+
+  }
+
+  .field-row { display: flex; gap: 10px; }
+
+  .field-row .field { flex: 1; margin-bottom: 0; }
+
+  input[type="number"], select {
+
+    width: 100%;
+
+    background: var(--bg);
+
+    border: 1px solid var(--border2);
+
+    border-radius: 8px;
+
+    padding: 10px 12px;
+
+    font-size: 15px;
+
+    color: var(--text);
+
+    outline: none;
+
+    transition: border-color 0.15s, box-shadow 0.15s;
+
+    -webkit-appearance: none;
+
+  }
+
+  input[type="number"]:focus, select:focus {
+
+    border-color: var(--accent);
+
+    box-shadow: 0 0 0 3px var(--accent-light);
+
+  }
+
+  .result-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+
+  .result-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+
+  .rcard {
+
+    border-radius: 8px;
+
+    padding: 12px 14px;
+
+    border: 1px solid var(--border);
+
+    background: var(--bg2);
+
+  }
+
+  .rcard.blue { background: var(--accent-light); border-color: var(--accent-border); }
+
+  .rcard.green { background: var(--green-light); border-color: var(--green-border); }
+
+  .rcard.amber { background: var(--amber-light); border-color: var(--amber-border); }
+
+  .rcard.red   { background: var(--red-light);   border-color: var(--red-border); }
+
+  .rcard-label { font-size: 11px; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+
+  .rcard-value { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; line-height: 1; }
+
+  .rcard.blue .rcard-value { color: var(--accent-text); }
+
+  .rcard.green .rcard-value { color: var(--green-text); }
+
+  .rcard.amber .rcard-value { color: var(--amber-text); }
+
+  .rcard.red   .rcard-value { color: var(--red-text); }
+
+  .rcard-unit { font-size: 12px; color: var(--text2); margin-top: 3px; }
+
+  .rcard-note { font-size: 12px; color: var(--text2); margin-top: 8px; line-height: 1.5; }
+
+  .alert {
+
+    border-radius: 8px;
+
+    padding: 12px 14px;
+
+    font-size: 13px;
+
+    line-height: 1.7;
+
+    margin-bottom: 12px;
+
+    border: 1px solid;
+
+  }
+
+  .alert.blue   { background: var(--accent-light); border-color: var(--accent-border); color: var(--accent-text); }
+
+  .alert.green  { background: var(--green-light);  border-color: var(--green-border);  color: var(--green-text); }
+
+  .alert.amber  { background: var(--amber-light);  border-color: var(--amber-border);  color: var(--amber-text); }
+
+  .alert.red    { background: var(--red-light);    border-color: var(--red-border);    color: var(--red-text); }
+
+  .alert strong { font-weight: 600; display: block; margin-bottom: 2px; }
+
+  .checklist { list-style: none; }
+
+  .checklist li {
+
+    display: flex; align-items: center; gap: 10px;
+
+    padding: 9px 0;
+
+    font-size: 13px; color: var(--text2);
+
+    border-bottom: 1px solid var(--border);
+
+  }
+
+  .checklist li:last-child { border-bottom: none; }
+
+  .checklist li::before {
+
+    content: '';
+
+    width: 16px; height: 16px;
+
+    border: 1.5px solid var(--border2);
+
+    border-radius: 4px;
+
+    flex-shrink: 0;
+
+    background: var(--bg);
+
+  }
+
+  .stop-list { list-style: none; }
+
+  .stop-list li {
+
+    display: flex; align-items: center; gap: 10px;
+
+    padding: 8px 0;
+
+    font-size: 13px; color: var(--red-text);
+
+    border-bottom: 1px solid var(--red-border);
+
+  }
+
+  .stop-list li:last-child { border-bottom: none; }
+
+  .stop-list li::before { content: '✕'; font-weight: 700; color: var(--red); }
+
+  .section-label {
+
+    font-size: 11px; font-weight: 600;
+
+    text-transform: uppercase; letter-spacing: 0.6px;
+
+    color: var(--text3);
+
+    margin-bottom: 10px;
+
+  }
+
+  .peep-seq { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+
+  .peep-chip {
+
+    border-radius: 8px;
+
+    padding: 8px 14px;
+
+    text-align: center;
+
+    border: 1px solid var(--border);
+
+    background: var(--bg2);
+
+    min-width: 60px;
+
+  }
+
+  .peep-chip.inc   { background: var(--accent-light); border-color: var(--accent-border); }
+
+  .peep-chip.dec   { background: var(--green-light);  border-color: var(--green-border); }
+
+  .peep-chip.rerec { background: var(--green-light);  border-color: var(--green-border); }
+
+  .peep-chip.warn  { background: var(--amber-light);  border-color: var(--amber-border); }
+
+  .peep-chip-val { font-size: 18px; font-weight: 700; }
+
+  .peep-chip.inc  .peep-chip-val { color: var(--accent-text); }
+
+  .peep-chip.dec  .peep-chip-val { color: var(--green-text); }
+
+  .peep-chip.rerec .peep-chip-val { color: var(--green-text); }
+
+  .peep-chip.warn .peep-chip-val { color: var(--amber-text); }
+
+  .peep-chip-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+  .divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+  .eit-legend {
+
+    background: var(--bg3);
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    padding: 12px 14px;
+
+    font-size: 13px;
+
+    line-height: 2;
+
+    margin-bottom: 14px;
+
+  }
+
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+
+  .dot.orange { background: #f97316; }
+
+  .dot.gray   { background: #9ca3af; }
+
+  .dot.gold   { background: #d97706; }
+
+  .final-optimal {
+
+    text-align: center;
+
+    padding: 28px 20px;
+
+    border-radius: 10px;
+
+    background: var(--green-light);
+
+    border: 1px solid var(--green-border);
+
+    margin-bottom: 14px;
+
+    display: none;
+
+  }
+
+  .final-optimal-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--green-text); margin-bottom: 8px; font-weight: 600; }
+
+  .final-optimal-val { font-size: 60px; font-weight: 800; color: var(--green-text); letter-spacing: -2px; line-height: 1; }
+
+  .final-optimal-unit { font-size: 16px; color: var(--green-text); margin-top: 4px; }
+
+  .final-note { font-size: 12px; color: var(--green-text); margin-top: 10px; opacity: 0.8; }
+
+  .decision { display: none; margin-top: 12px; }
+
+  .dec-row {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 8px 0;
+
+    border-bottom: 1px solid var(--border);
+
+  }
+
+  .dec-row:last-child { border-bottom: none; }
+
+  .dec-peep-badge {
+
+    min-width: 64px;
+
+    border-radius: 8px;
+
+    padding: 8px 12px;
+
+    text-align: center;
+
+    border: 1px solid var(--green-border);
+
+    background: var(--green-light);
+
+    flex-shrink: 0;
+
+  }
+
+  .dec-peep-badge.done-badge {
+
+    background: #f0fdf4;
+
+    border-color: #bbf7d0;
+
+    opacity: 0.6;
+
+  }
+
+  .dec-peep-badge .bval { font-size: 20px; font-weight: 700; color: var(--green-text); }
+
+  .dec-peep-badge .bsub { font-size: 11px; color: var(--text3); }
+
+  .timer-btn {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    flex: 1;
+
+    background: var(--bg);
+
+    border: 1px solid var(--border2);
+
+    border-radius: 8px;
+
+    padding: 10px 14px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    color: var(--text);
+
+    transition: background 0.15s, border-color 0.15s;
+
+    position: relative;
+
+    overflow: hidden;
+
+  }
+
+  .timer-btn:active { transform: scale(0.98); }
+
+  .timer-btn.running {
+
+    border-color: var(--accent-border);
+
+    background: var(--accent-light);
+
+  }
+
+  .timer-btn.done-btn {
+
+    border-color: var(--green-border);
+
+    background: var(--green-light);
+
+    cursor: default;
+
+  }
+
+  .timer-fill {
+
+    position: absolute;
+
+    left: 0; top: 0; bottom: 0;
+
+    background: rgba(29,78,216,0.07);
+
+    transition: width 1s linear;
+
+    width: 0%;
+
+    border-radius: 8px 0 0 8px;
+
+  }
+
+  .timer-btn.done-btn .timer-fill {
+
+    width: 100%;
+
+    background: rgba(5,150,105,0.08);
+
+    border-radius: 8px;
+
+  }
+
+  .timer-icon { font-size: 16px; flex-shrink: 0; position: relative; z-index: 1; }
+
+  .timer-label { font-size: 14px; font-weight: 500; position: relative; z-index: 1; }
+
+  .timer-count {
+
+    margin-left: auto;
+
+    font-size: 22px;
+
+    font-weight: 700;
+
+    min-width: 44px;
+
+    text-align: right;
+
+    position: relative; z-index: 1;
+
+    font-variant-numeric: tabular-nums;
+
+    color: var(--accent-text);
+
+  }
+
+  .timer-btn.done-btn .timer-count { color: var(--green-text); }
+
+  .timer-reset {
+
+    background: none;
+
+    border: 1px solid var(--border2);
+
+    border-radius: 6px;
+
+    padding: 6px 10px;
+
+    font-size: 12px;
+
+    color: var(--text2);
+
+    cursor: pointer;
+
+  }
+
+  .timer-reset:hover { background: var(--bg3); }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 520px) {
+
+    .result-row.triple { grid-template-columns: 1fr 1fr; }
+
+    .rcard-value { font-size: 22px; }
+
+    .final-optimal-val { font-size: 44px; }
+
+    .field-row { flex-direction: column; }
+
+  }
+
+</style>
+
+</head>
+
+<body>
+
+<header class="page-header">
+
+  <div class="header-icon">🫁</div>
+
+  <div>
+
+    <div class="header-title">EIT Guide — PEEP Titration</div>
+
+    <div class="header-sub">台中榮總 呼吸治療科</div>
+
+  </div>
+
+  <div class="header-badge">ver. 1</div>
+
+</header>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<main class="main">
+
+  <!-- 準備 -->
+
+  <div class="step-block">
+
+    <div class="step-header">
+
+      <div class="step-badge prep">準備</div>
+
+      <div>
+
+        <div class="step-title">基本資料 &amp; 執行前確認</div>
+
+        <div class="step-desc">計算 PBW 與潮氣量目標，確認準備完成</div>
+
+      </div>
+
+    </div>
+
+    <div class="step-body">
+
+      <div class="field-row">
+
+        <div class="field">
+
+          <label class="field-label">身高 (cm)</label>
+
+          <input type="number" id="height" placeholder="例：170" oninput="calc()">
+
+        </div>
+
+        <div class="field">
+
+          <label class="field-label">性別</label>
+
+          <select id="sex" onchange="calc()">
+
+            <option value="M">男</option>
+
+            <option value="F">女</option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+      <div id="pbw-row" class="hidden">
+
+        <div class="result-row" style="margin-top:14px;">
+
+          <div class="rcard blue">
+
+            <div class="rcard-label">PBW</div>
+
+            <div class="rcard-value" id="pbw-val">—</div>
+
+            <div class="rcard-unit">kg</div>
+
+            <div style="margin-top:10px;font-size:11px;color:var(--accent-text);line-height:1.9;">
+
+              <span style="color:var(--text3);">4 ml/kg</span> <span id="vt4-val" style="font-weight:600;">—</span> ml<br>
+
+              <span style="color:var(--text3);">5 ml/kg</span> <span id="vt5-val" style="font-weight:600;">—</span> ml<br>
+
+              <span style="color:var(--text3);">6 ml/kg</span> <span id="vt6-val" style="font-weight:600;">—</span> ml
+
+            </div>
+
+          </div>
+
+          <div class="rcard blue">
+
+            <div class="rcard-label">實際設定 VT</div>
+
+            <input type="number" id="vt-actual" placeholder="輸入實際值"
+
+              style="width:100%;background:transparent;border:none;border-bottom:1.5px solid var(--accent-border);border-radius:0;padding:4px 0;font-size:22px;font-weight:700;color:var(--accent-text);outline:none;margin-top:4px;"
+
+              oninput="calc()">
+
+            <div class="rcard-unit" style="margin-top:4px;">ml（供後續計算使用）</div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-label">執行前確認清單</div>
+
+      <ul class="checklist">
+
+        <li>完成翻身與完整抽痰</li>
+
+        <li>氣囊壓力維持於 30 cmH₂O</li>
+
+        <li>RASS ≤ −3（適時給予鎮靜劑 / 肌肉魆弛劑）</li>
+
+        <li>綁帶置於 4–6 胋間（腋穩下 5 cm，兩乳頭位置）</li>
+
+        <li>確認 Enhance Contrast 綁帶位置正確</li>
+
+        <li>仰臥：參考電極置腹部；俧臥：置右手</li>
+
+      </ul>
+
+      <div class="alert red" style="margin-top:14px;margin-bottom:0;">
+
+        <strong>操作期間嚴禁</strong>
+
+        拍痰、抽痰、咒崽、翻身、蒸氣吸藥、自主呼吸、呼吸器管路脱落
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Step 1 -->
+
+  <div class="step-block">
+
+    <div class="step-header">
+
+      <div class="step-badge">S1</div>
+
+      <div>
+
+        <div class="step-title">Low flow inflation — AOP</div>
+
+        <div class="step-desc">P-V loop 找開啟壓力（Airway Opening Pressure）</div>
+
+      </div>
+
+    </div>
+
+    <div class="step-body">
+
+      <div class="mode-box">
+
+        <span class="lbl">模式 </span><span class="param">VCV</span> &nbsp;|&nbsp;
+
+        <span class="lbl">VC </span><span class="param" id="s1-vt">—</span> ml &nbsp;|&nbsp;
+
+        <span class="lbl">Flow </span><span class="param">5 L/min</span> &nbsp;|&nbsp;
+
+        <span class="lbl">PEEP </span><span class="param">5 cmH₂O</span>
+
+      </div>
+
+      <div class="alert blue">
+
+        切換 P-V loop 視窗，待完成一次呼吸循環後截圖。<br>
+
+        找 VT 增加 ≥ 4 ml 的轉折點為 AOP；若無轉折點，設 AOP = 5 cmH₂O。
+
+      </div>
+
+      <div class="field">
+
+        <label class="field-label">量測到的 AOP (cmH₂O)　若無轉折點請輸入 5</label>
+
+        <input type="number" id="aop-raw" placeholder="5 – 20" min="1" max="20" oninput="calc()">
+
+      </div>
+
+      <div id="aop-result" class="result-row hidden">
+
+        <div class="rcard blue">
+
+          <div class="rcard-label">有效 AOP</div>
+
+          <div class="rcard-value" id="aop-val">—</div>
+
+          <div class="rcard-unit">cmH₂O</div>
+
+          <div class="rcard-note" id="aop-note"></div>
+
+        </div>
+
+        <div class="rcard blue">
+
+          <div class="rcard-label">Step 2 PEEP 範圍</div>
+
+          <div class="rcard-value" id="aop-range">—</div>
+
+          <div class="rcard-unit">high → low（cmH₂O）</div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Step 2 -->
+
+  <div class="step-block">
+
+    <div class="step-header">
+
+      <div class="step-badge">S2</div>
+
+      <div>
+
+        <div class="step-title">Single breath — R/I ratio</div>
+
+        <div class="step-desc">判斷肺復張可行性（Recruitment-to-Inflation Ratio）</div>
+
+      </div>
+
+    </div>
+
+    <div class="step-body">
+
+      <div class="mode-box">
+
+        <span class="lbl">模式 </span><span class="param">VCV</span> &nbsp;|&nbsp;
+
+        <span class="lbl">PEEPhigh </span><span class="param" id="s2-ph">—</span> cmH₂O &nbsp;|&nbsp;
+
+        <span class="lbl">PEEPlow </span><span class="param" id="s2-pl">—</span> cmH₂O<br>
+
+        <span class="lbl">VC </span><span class="param" id="s2-vt">—</span> ml（6 ml/kg-PBW）
+
+      </div>
+
+      <div class="alert blue">
+
+        將 PEEP 從 PEEPhigh 直接降至 PEEPlow，紀錄兩者間 VT 差異（ΔVrec）及 PEEPlow 時的 Pplat。
+
+      </div>
+
+      <div class="field-row">
+
+        <div class="field">
+
+          <label class="field-label">ΔVrec — VT 差（ml）</label>
+
+          <input type="number" id="dvrec" placeholder="例：120" oninput="calc()">
+
+        </div>
+
+        <div class="field">
+
+          <label class="field-label">Pplat @ PEEPlow (cmH₂O)</label>
+
+          <input type="number" id="pplat" placeholder="例：18" oninput="calc()">
+
+        </div>
+
+      </div>
+
+      <div id="ri-result" class="hidden">
+
+        <div class="result-row triple">
+
+          <div class="rcard blue">
+
+            <div class="rcard-label">Crec</div>
+
+            <div class="rcard-value" id="crec-val">—</div>
+
+            <div class="rcard-unit">ml/cmH₂O</div>
+
+          </div>
+
+          <div class="rcard blue">
+
+            <div class="rcard-label">Crs</div>
+
+            <div class="rcard-value" id="crs-val">—</div>
+
+            <div class="rcard-unit">ml/cmH₂O</div>
+
+          </div>
+
+          <div class="rcard" id="ri-card">
+
+            <div class="rcard-label">R/I ratio</div>
+
+            <div class="rcard-value" id="ri-val">—</div>
+
+            <div class="rcard-unit">Crec / Crs</div>
+
+          </div>
+
+        </div>
+
+        <div id="ri-decision" class="decision"></div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Step 3 -->
+
+  <div class="step-block">
+
+    <div class="step-header">
+
+      <div class="step-badge">S3</div>
+
+      <div>
+
+        <div class="step-title">Incremental PEEP trial — Lung recruitment</div>
+
+        <div class="step-desc">每次 +2 cmH₂O，各維持 1 分鐘，直到 PEEP = 20 cmH₂O</div>
+
+      </div>
+
+    </div>
+
+    <div class="step-body">
+
+      <div class="mode-box">
+
+        <span class="lbl">模式 </span><span class="param">PCV</span> &nbsp;|&nbsp;
+
+        <span class="lbl">PC </span><span class="param">15 cmH₂O</span> &nbsp;|&nbsp;
+
+        <span class="lbl">RR </span><span class="param">10 bpm</span> &nbsp;|&nbsp;
+
+        <span class="lbl">I:E </span><span class="param">1:1（Ti 3 sec）</span> &nbsp;|&nbsp;
+
+        <span class="lbl">FiO₂ </span><span class="param">100%</span>
+
+      </div>
+
+      <div class="field">
+
+        <label class="field-label">目前 PEEP 起始點 (cmH₂O)</label>
+
+        <input type="number" id="peep-start" placeholder="例：12" min="1" max="20" oninput="calc()">
+
+      </div>
+
+      <div id="inc-seq" class="hidden">
+
+        <div style="display:flex;gap:14px;align-items:stretch;margin-bottom:4px;">
+
+          <div style="flex:0 0 auto;background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:120px;">
+
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--text3);margin-bottom:6px;">目前 PEEP</div>
+
+            <div id="s3-peep" style="font-size:32px;font-weight:800;color:var(--accent-text);line-height:1;">—</div>
+
+            <div style="font-size:11px;color:var(--text3);margin-top:2px;">cmH₂O</div>
+
+            <div style="margin-top:12px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--text3);">倒數</div>
+
+            <div id="s3-count" style="font-size:48px;font-weight:800;line-height:1;color:var(--accent-text);font-variant-numeric:tabular-nums;">60</div>
+
+            <div style="font-size:11px;color:var(--text3);">秒</div>
+
+            <svg width="64" height="64" style="margin-top:10px;">
+
+              <circle cx="32" cy="32" r="26" fill="none" stroke="var(--border)" stroke-width="4"/>
+
+              <circle id="s3-ring" cx="32" cy="32" r="26" fill="none" stroke="var(--accent)" stroke-width="4"
+
+                stroke-dasharray="163.4" stroke-dashoffset="163.4"
+
+                stroke-linecap="round" transform="rotate(-90 32 32)" style="transition:stroke-dashoffset 1s linear;"/>
+
+            </svg>
+
+          </div>
+
+          <div style="flex:1;display:flex;flex-direction:column;gap:10px;">
+
+            <div style="display:flex;gap:8px;">
+
+              <button id="s3-btn" onclick="s3Toggle()" style="flex:1;padding:12px;font-size:14px;font-weight:600;border:1px solid var(--accent-border);border-radius:8px;background:var(--accent-light);color:var(--accent-text);cursor:pointer;">▶ 開始</button>
+
+              <button onclick="s3Reset()" style="padding:12px 14px;font-size:14px;border:1px solid var(--border2);border-radius:8px;background:var(--bg);color:var(--text2);cursor:pointer;">↺</button>
+
+            </div>
+
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--text3);">遞増序列（各 1 分鐘）</div>
+
+            <div id="s3-chips" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-label">立即停止操作的條件</div>
+
+      <div class="alert red" style="margin-bottom:10px;">
+
+        <ul class="stop-list">
+
+          <li>SpO₂ &lt; 85%，持續 ≥ 1 分鐘</li>
+
+          <li>MAP &lt; 65 mmHg</li>
+
+          <li>HR 變化 &gt; 20%（心搏過快或過慢）</li>
+
+        </ul>
+
+      </div>
+
+      <div class="alert amber" style="margin-bottom:0;">
+
+        停止後調回 Recruitment 前設定。若 FiO₂/PEEP table 調整後 SpO₂ 仍 &lt; 90% 持續 1 分鐘以上，需再次 Recruitment。
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Step 4 -->
+
+  <div class="step-block">
+
+    <div class="step-header">
+
+      <div class="step-badge">S4</div>
+
+      <div>
+
+        <div class="step-title">Decremental PEEP trial — PEEP titration</div>
+
+        <div class="step-desc">每次 −2 cmH₂O，各維持 30 秒，直到 PEEP = 6 cmH₂O</div>
+
+      </div>
+
+    </div>
+
+    <div class="step-body">
+
+      <div class="mode-box">
+
+        <span class="lbl">模式 </span><span class="param">VCV</span> &nbsp;|&nbsp;
+
+        <span class="lbl">VC </span><span class="param" id="s4-vt">—</span> ml &nbsp;|&nbsp;
+
+        <span class="lbl">RR </span><span class="param">20–30 bpm</span>（不產生 auto-PEEP）<br>
+
+        <span class="lbl">Ti </span><span class="param">0.8–0.9 sec</span> &nbsp;|&nbsp;
+
+        <span class="lbl">FiO₂ </span><span class="param">100%</span>
+
+      </div>
+
+      <div class="alert green">
+
+        塌陷速度快，5 次呼吸循環後 EIT 即可擷取數值，因此每個 PEEP 僅需維持 30 秒。
+
+      </div>
+
+      <!-- single stopwatch -->
+
+      <div id="dec-stopwatch" style="display:flex;gap:14px;align-items:stretch;margin-bottom:16px;">
+
+        <!-- big timer -->
+
+        <div style="flex:0 0 auto;background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:120px;">
+
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--text3);margin-bottom:6px;">目前 PEEP</div>
+
+          <div id="sw-peep" style="font-size:32px;font-weight:800;color:var(--accent-text);line-height:1;">—</div>
+
+          <div style="font-size:11px;color:var(--text3);margin-top:2px;">cmH₂O</div>
+
+          <div style="margin-top:12px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--text3);">倒數</div>
+
+          <div id="sw-count" style="font-size:48px;font-weight:800;line-height:1;color:var(--accent-text);font-variant-numeric:tabular-nums;">30</div>
+
+          <div style="font-size:11px;color:var(--text3);">秒</div>
+
+          <!-- progress ring -->
+
+          <svg width="64" height="64" style="margin-top:10px;">
+
+            <circle cx="32" cy="32" r="26" fill="none" stroke="var(--border)" stroke-width="4"/>
+
+            <circle id="sw-ring" cx="32" cy="32" r="26" fill="none" stroke="var(--accent)" stroke-width="4"
+
+              stroke-dasharray="163.4" stroke-dashoffset="163.4"
+
+              stroke-linecap="round" transform="rotate(-90 32 32)" style="transition:stroke-dashoffset 1s linear;"/>
+
+          </svg>
+
+        </div>
+
+        <!-- controls + PEEP chips -->
+
+        <div style="flex:1;display:flex;flex-direction:column;gap:10px;">
+
+          <div style="display:flex;gap:8px;">
+
+            <button id="sw-btn" onclick="swToggle()" style="flex:1;padding:12px;font-size:14px;font-weight:600;border:1px solid var(--accent-border);border-radius:8px;background:var(--accent-light);color:var(--accent-text);cursor:pointer;">▶ 開始</button>
+
+            <button onclick="swReset()" style="padding:12px 14px;font-size:14px;border:1px solid var(--border2);border-radius:8px;background:var(--bg);color:var(--text2);cursor:pointer;">↺</button>
+
+          </div>
+
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--text3);">遞減序列</div>
+
+          <div id="sw-chips" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Step 5 -->
+
+  <div class="step-block">
+
+    <div class="step-header">
+
+      <div class="step-badge">S5</div>
+
+      <div>
+
+        <div class="step-title">Re-recruitment — 重新開啟肺臟</div>
+
+        <div class="step-desc">每次 +5 cmH₂O，各維持 1 分鐘，直到 PEEP = 20 cmH₂O</div>
+
+      </div>
+
+    </div>
+
+    <div class="step-body">
+
+      <div class="mode-box">
+
+        <span class="lbl">模式 </span><span class="param">PCV</span> &nbsp;|&nbsp;
+
+        <span class="lbl">PC </span><span class="param">15 cmH₂O</span> &nbsp;|&nbsp;
+
+        <span class="lbl">RR </span><span class="param">10 bpm</span> &nbsp;|&nbsp;
+
+        <span class="lbl">I:E </span><span class="param">1:1（Ti 3 sec）</span><br>
+
+        <span class="lbl">FiO₂ </span><span class="param">維持 SpO₂ &gt; 90%</span>
+
+      </div>
+
+      <div style="display:flex;gap:14px;align-items:stretch;margin-bottom:4px;">
+
+          <div style="flex:0 0 auto;background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:120px;">
+
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--text3);margin-bottom:6px;">目前 PEEP</div>
+
+            <div id="s5-peep" style="font-size:32px;font-weight:800;color:var(--green);line-height:1;">—</div>
+
+            <div style="font-size:11px;color:var(--text3);margin-top:2px;">cmH₂O</div>
+
+            <div style="margin-top:12px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--text3);">倒數</div>
+
+            <div id="s5-count" style="font-size:48px;font-weight:800;line-height:1;color:var(--green-text);font-variant-numeric:tabular-nums;">60</div>
+
+            <div style="font-size:11px;color:var(--text3);">秒</div>
+
+            <svg width="64" height="64" style="margin-top:10px;">
+
+              <circle cx="32" cy="32" r="26" fill="none" stroke="var(--border)" stroke-width="4"/>
+
+              <circle id="s5-ring" cx="32" cy="32" r="26" fill="none" stroke="var(--green)" stroke-width="4"
+
+                stroke-dasharray="163.4" stroke-dashoffset="163.4"
+
+                stroke-linecap="round" transform="rotate(-90 32 32)" style="transition:stroke-dashoffset 1s linear;"/>
+
+            </svg>
+
+          </div>
+
+          <div style="flex:1;display:flex;flex-direction:column;gap:10px;">
+
+            <div style="display:flex;gap:8px;">
+
+              <button id="s5-btn" onclick="s5Toggle()" style="flex:1;padding:12px;font-size:14px;font-weight:600;border:1px solid var(--green-border);border-radius:8px;background:var(--green-light);color:var(--green-text);cursor:pointer;">▶ 開始</button>
+
+              <button onclick="s5Reset()" style="padding:12px 14px;font-size:14px;border:1px solid var(--border2);border-radius:8px;background:var(--bg);color:var(--text2);cursor:pointer;">↺</button>
+
+            </div>
+
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--text3);">Re-recruitment 序列（各 1 分鐘）</div>
+
+            <div id="s5-chips" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+
+          </div>
+
+        </div>
+
+      <div class="alert blue" style="margin-top:14px;margin-bottom:0;">
+
+        Decremental trial 後肺臟已低於最佳 PEEP，需 Re-recruitment 重新開啟後，再依 EIT 判讀結果設定最佳 PEEP。
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Step 6 -->
+
+  <div class="step-block">
+
+    <div class="step-header">
+
+      <div class="step-badge">S6</div>
+
+      <div>
+
+        <div class="step-title">EIT Diagnosis — 最佳 PEEP 判讀</div>
+
+        <div class="step-desc">OD/CL crossing point + ΔEELI 趨勢分析</div>
+
+      </div>
+
+    </div>
+
+    <div class="step-body">
+
+      <div class="mode-box">調整回原本的呼吸模式，開啟 <span class="param">EIT Diagnosis view</span> 及 <span class="param">ΔEELI-trend view</span>。</div>
+
+      <div class="section-label">訊號判讀說明</div>
+
+      <div class="eit-legend">
+
+        <span class="dot orange"></span><strong style="color:#ea580c;">橘色 C loss HP</strong>：PEEP 過高 → compliance ↓ → <strong>過度膨潲（Overdistension）</strong><br>
+
+        <span class="dot gray"></span><strong style="color:#4b5563;">白色 C loss LP</strong>：PEEP 過低 → compliance ↓ → <strong>塌陷（Lung collapse）</strong><br>
+
+        <span class="dot gold"></span><strong style="color:#b45309;">交錯點（Crossing point）</strong>：最少 overdistension &amp; 最少 collapse = 最佳 PEEP
+
+      </div>
+
+      <div class="alert blue" style="margin-bottom:16px;">
+
+        在 ΔEELI-trend view 中，觀察 Decremental trial 階段 ΔEELI 變化量最大的 PEEP 值，即為 <strong>UIP</strong>。<br>
+
+        最終 PEEP 應介於 <strong>AOP</strong> 與 <strong>UIP</strong> 之間，並確認 ΔEELI 在此 PEEP 維持穩定。
+
+      </div>
+
+      <div class="field-row">
+
+        <div class="field">
+
+          <label class="field-label">Crossing point 最佳 PEEP (cmH₂O)</label>
+
+          <input type="number" id="optimal-peep" placeholder="由 EIT 判讀後輸入" oninput="calc()">
+
+        </div>
+
+        <div class="field">
+
+          <label class="field-label">ΔEELI 判讀 UIP (cmH₂O)　可選填</label>
+
+          <input type="number" id="uip-input" placeholder="可選填" oninput="calc()">
+
+        </div>
+
+      </div>
+
+      <div id="final-box" class="final-optimal">
+
+        <div class="final-optimal-label">EIT 建議最佳 PEEP</div>
+
+        <div class="final-optimal-val" id="final-val">—</div>
+
+        <div class="final-optimal-unit">cmH₂O</div>
+
+        <div class="final-note" id="final-note"></div>
+
+      </div>
+
+      <div id="lpv-box" class="alert green hidden">
+
+        <strong>後續 Lung Protective Ventilation 設定原則</strong>
+
+        PC level ≤ 15 cmH₂O，或 VC target 4–6 ml/kg-PBW（= <span id="lpv-vt">依 PBW 計算</span>）<br>
+
+        持續觀察 ΔEELI 在設定 PEEP 下應維持穩定。
+
+      </div>
+
+    </div>
+
+  </div>
+
+</main>
+
+<script>
+
+  let state = { pbw: null, vt: null, aop: null, peephigh: null, peeplow: null };
+
+  function calc() {
+
+    calcPBW(); calcAOP(); calcRI(); calcPEEPSeq(); calcFinal(); updateProgress();
+
+  }
+
+  function calcPBW() {
+
+    const h = parseFloat(document.getElementById('height').value);
+
+    const sex = document.getElementById('sex').value;
+
+    if (!h || h < 100) { state.pbw = null; state.vt = null; hide('pbw-row'); return; }
+
+    const pbw = sex === 'M' ? 50 + 0.91*(h-152.4) : 45.5 + 0.91*(h-152.4);
+
+    state.pbw = Math.max(pbw, 20);
+
+    document.getElementById('pbw-val').textContent = state.pbw.toFixed(1);
+
+    document.getElementById('vt4-val').textContent = Math.round(state.pbw * 4);
+
+    document.getElementById('vt5-val').textContent = Math.round(state.pbw * 5);
+
+    document.getElementById('vt6-val').textContent = Math.round(state.pbw * 6);
+
+    show('pbw-row');
+
+    const actualRaw = parseFloat(document.getElementById('vt-actual').value);
+
+    state.vt = !isNaN(actualRaw) && actualRaw > 0 ? Math.round(actualRaw) : Math.round(state.pbw * 6);
+
+    document.getElementById('s1-vt').textContent = state.vt;
+
+    document.getElementById('s2-vt').textContent = state.vt;
+
+    document.getElementById('s4-vt').textContent = state.vt;
+
+    document.getElementById('lpv-vt').textContent = Math.round(state.pbw*4) + '–' + Math.round(state.pbw*6) + ' ml';
+
+  }
+
+  function calcAOP() {
+
+    const raw = parseFloat(document.getElementById('aop-raw').value);
+
+    if (isNaN(raw)) { state.aop = null; hide('aop-result'); return; }
+
+    state.aop = raw < 5 ? 5 : raw;
+
+    state.peephigh = Math.min(state.aop + 10, 20);
+
+    state.peeplow = Math.max(state.aop, 5);
+
+    document.getElementById('aop-val').textContent = state.aop;
+
+    document.getElementById('aop-note').textContent = raw < 5 ? '量測值 < 5，設為下限 5 cmH₂O' : 'P-V loop 轉折點 ' + raw + ' cmH₂O';
+
+    document.getElementById('aop-range').textContent = state.peephigh + ' → ' + state.peeplow;
+
+    document.getElementById('s2-ph').textContent = state.peephigh;
+
+    document.getElementById('s2-pl').textContent = state.peeplow;
+
+    show('aop-result');
+
+  }
+
+  function calcRI() {
+
+    const dvrec = parseFloat(document.getElementById('dvrec').value);
+
+    const pplat = parseFloat(document.getElementById('pplat').value);
+
+    if (!state.aop || isNaN(dvrec) || isNaN(pplat) || !state.vt) { hide('ri-result'); return; }
+
+    const dp = state.peephigh - state.peeplow;
+
+    if (dp === 0) return;
+
+    const crec = dvrec / dp;
+
+    const crs = state.vt / (pplat - state.peeplow);
+
+    const ri = crec / crs;
+
+    document.getElementById('crec-val').textContent = crec.toFixed(1);
+
+    document.getElementById('crs-val').textContent = crs > 0 ? crs.toFixed(1) : '—';
+
+    document.getElementById('ri-val').textContent = ri > 0 ? ri.toFixed(2) : '—';
+
+    const card = document.getElementById('ri-card');
+
+    const dec = document.getElementById('ri-decision');
+
+    if (ri < 0.5) {
+
+      card.className = 'rcard amber';
+
+      dec.innerHTML = '<div class="alert amber"><strong>R/I &lt; 0.5 → Low recruitability</strong>無需執行 EIT-guided PEEP titration。<br>依照 <strong>Low PEEP / High FiO₂</strong> table 調整即可。</div>';
+
+    } else {
+
+      card.className = 'rcard green';
+
+      dec.innerHTML = '<div class="alert green"><strong>R/I ≥ 0.5 → High recruitability</strong>繼續執行 EIT-guided PEEP titration（Step 3 → 6）。</div>';
+
+    }
+
+    dec.style.display = 'block';
+
+    show('ri-result');
+
+  }
+
+  function calcPEEPSeq() {
+
+    const start = parseInt(document.getElementById('peep-start').value);
+
+    if (isNaN(start) || start < 1) { hide('inc-seq'); return; }
+
+    s3Peeps = [];
+
+    for (let p = start; p <= 20; p += 2) s3Peeps.push(p);
+
+    s3Reset();
+
+    show('inc-seq');
+
+  }
+
+  let s3Peeps = [];
+
+  let s3 = { idx: 0, remaining: 60, running: false, interval: null, done: false };
+
+  function s3BuildChips() {
+
+    const el = document.getElementById('s3-chips');
+
+    if (!el) return;
+
+    el.innerHTML = s3Peeps.map((p, i) => {
+
+      const pip = p + 15;
+
+      let bg = i < s3.idx ? 'background:var(--green-light);border-color:var(--green-border);color:var(--green-text);'
+
+             : i === s3.idx && !s3.done ? 'background:var(--accent-light);border-color:var(--accent-border);color:var(--accent-text);font-weight:700;'
+
+             : pip > 35 ? 'background:var(--amber-light);border-color:var(--amber-border);color:var(--amber-text);'
+
+             : 'background:var(--bg3);border-color:var(--border2);color:var(--text2);';
+
+      return `<div style="border-radius:7px;border:1px solid;padding:5px 10px;font-size:13px;text-align:center;${bg}">${i < s3.idx ? '✓ ' : ''}${p}<span style="font-size:10px;margin-left:2px;">/ PIP ${pip}</span></div>`;
+
+    }).join('');
+
+  }
+
+  function s3UpdateDisplay() {
+
+    if (!s3Peeps.length) return;
+
+    const peep = s3Peeps[s3.idx];
+
+    const ring = document.getElementById('s3-ring');
+
+    const cnt = document.getElementById('s3-count');
+
+    const peepEl = document.getElementById('s3-peep');
+
+    const btn = document.getElementById('s3-btn');
+
+    if (!cnt) return;
+
+    const elapsed = 60 - s3.remaining;
+
+    ring.setAttribute('stroke-dashoffset', (163.4 - 163.4 * elapsed / 60).toFixed(1));
+
+    ring.setAttribute('stroke', s3.remaining <= 10 ? 'var(--red)' : 'var(--accent)');
+
+    cnt.textContent = s3.remaining;
+
+    cnt.style.color = s3.remaining <= 10 ? 'var(--red)' : 'var(--accent-text)';
+
+    peepEl.textContent = s3.done ? '✓' : peep;
+
+    peepEl.style.color = s3.done ? 'var(--green-text)' : 'var(--accent-text)';
+
+    btn.textContent = s3.done ? '完成' : (s3.running ? '⏸ 暫停' : (s3.remaining < 60 || s3.idx > 0 ? '▶ 繼續' : '▶ 開始'));
+
+    btn.style.background = s3.done ? 'var(--green-light)' : 'var(--accent-light)';
+
+    btn.style.borderColor = s3.done ? 'var(--green-border)' : 'var(--accent-border)';
+
+    btn.style.color = s3.done ? 'var(--green-text)' : 'var(--accent-text)';
+
+    s3BuildChips();
+
+  }
+
+  function s3Toggle() {
+
+    if (s3.done) return;
+
+    if (s3.running) {
+
+      clearInterval(s3.interval); s3.running = false; s3UpdateDisplay();
+
+    } else {
+
+      s3.running = true; s3UpdateDisplay();
+
+      s3.interval = setInterval(() => {
+
+        s3.remaining--;
+
+        s3UpdateDisplay();
+
+        if (s3.remaining <= 0) {
+
+          if (navigator.vibrate) navigator.vibrate([200,100,200]);
+
+          s3.idx++;
+
+          if (s3.idx >= s3Peeps.length) {
+
+            clearInterval(s3.interval); s3.running = false; s3.done = true; s3UpdateDisplay();
+
+          } else { s3.remaining = 60; s3UpdateDisplay(); }
+
+        }
+
+      }, 1000);
+
+    }
+
+  }
+
+  function s3Reset() {
+
+    clearInterval(s3.interval);
+
+    s3 = { idx: 0, remaining: 60, running: false, interval: null, done: false };
+
+    s3UpdateDisplay();
+
+  }
+
+  const S5_PEEPS = [5, 10, 15, 20];
+
+  let s5 = { idx: 0, remaining: 60, running: false, interval: null, done: false };
+
+  function s5BuildChips() {
+
+    const el = document.getElementById('s5-chips');
+
+    if (!el) return;
+
+    el.innerHTML = S5_PEEPS.map((p, i) => {
+
+      let bg = i < s5.idx ? 'background:var(--green-light);border-color:var(--green-border);color:var(--green-text);'
+
+             : i === s5.idx && !s5.done ? 'background:var(--green-light);border-color:var(--green-border);color:var(--green-text);font-weight:700;'
+
+             : 'background:var(--bg3);border-color:var(--border2);color:var(--text2);';
+
+      return `<div style="border-radius:7px;border:1px solid;padding:5px 10px;font-size:13px;text-align:center;${bg}">${i < s5.idx ? '✓ ' : ''}${p}<span style="font-size:10px;margin-left:2px;">cmH₂O</span></div>`;
+
+    }).join('');
+
+  }
+
+  function s5UpdateDisplay() {
+
+    const peep = S5_PEEPS[s5.idx];
+
+    const ring = document.getElementById('s5-ring');
+
+    const cnt = document.getElementById('s5-count');
+
+    const peepEl = document.getElementById('s5-peep');
+
+    const btn = document.getElementById('s5-btn');
+
+    if (!cnt) return;
+
+    const elapsed = 60 - s5.remaining;
+
+    ring.setAttribute('stroke-dashoffset', (163.4 - 163.4 * elapsed / 60).toFixed(1));
+
+    ring.setAttribute('stroke', s5.remaining <= 10 ? 'var(--red)' : 'var(--green)');
+
+    cnt.textContent = s5.remaining;
+
+    cnt.style.color = s5.remaining <= 10 ? 'var(--red)' : 'var(--green-text)';
+
+    peepEl.textContent = s5.done ? '✓' : peep;
+
+    peepEl.style.color = s5.done ? 'var(--green-text)' : 'var(--green)';
+
+    btn.textContent = s5.done ? '完成' : (s5.running ? '⏸ 暫停' : (s5.remaining < 60 || s5.idx > 0 ? '▶ 繼續' : '▶ 開始'));
+
+    s5BuildChips();
+
+  }
+
+  function s5Toggle() {
+
+    if (s5.done) return;
+
+    if (s5.running) {
+
+      clearInterval(s5.interval); s5.running = false; s5UpdateDisplay();
+
+    } else {
+
+      s5.running = true; s5UpdateDisplay();
+
+      s5.interval = setInterval(() => {
+
+        s5.remaining--;
+
+        s5UpdateDisplay();
+
+        if (s5.remaining <= 0) {
+
+          if (navigator.vibrate) navigator.vibrate([200,100,200]);
+
+          s5.idx++;
+
+          if (s5.idx >= S5_PEEPS.length) {
+
+            clearInterval(s5.interval); s5.running = false; s5.done = true; s5UpdateDisplay();
+
+          } else { s5.remaining = 60; s5UpdateDisplay(); }
+
+        }
+
+      }, 1000);
+
+    }
+
+  }
+
+  function s5Reset() {
+
+    clearInterval(s5.interval);
+
+    s5 = { idx: 0, remaining: 60, running: false, interval: null, done: false };
+
+    s5UpdateDisplay();
+
+  }
+
+  s5UpdateDisplay();
+
+  function calcFinal() {
+
+    const op = parseFloat(document.getElementById('optimal-peep').value);
+
+    const uip = parseFloat(document.getElementById('uip-input').value);
+
+    const box = document.getElementById('final-box');
+
+    const lpv = document.getElementById('lpv-box');
+
+    if (isNaN(op)) { box.style.display = 'none'; lpv.classList.add('hidden'); return; }
+
+    document.getElementById('final-val').textContent = op;
+
+    let note = '';
+
+    if (state.aop && !isNaN(uip)) {
+
+      const ok = op >= state.aop && op <= uip;
+
+      note = 'AOP = ' + state.aop + ' cmH₂O　UIP = ' + uip + ' cmH₂O　→ ' + (ok ? '✓ PEEP 落在有效範圍內' : '⚠ 建議落在 AOP–UIP 之間，請再確認');
+
+    } else if (state.aop) {
+
+      note = 'AOP = ' + state.aop + ' cmH₂O　PEEP 應 ≥ AOP';
+
+    }
+
+    document.getElementById('final-note').textContent = note;
+
+    box.style.display = 'block';
+
+    lpv.classList.remove('hidden');
+
+  }
+
+  function updateProgress() {
+
+    const ids = ['height','aop-raw','dvrec','pplat','peep-start','optimal-peep'];
+
+    const filled = ids.filter(id => document.getElementById(id).value.trim() !== '').length;
+
+    document.getElementById('progressFill').style.width = Math.round(filled/ids.length*100) + '%';
+
+  }
+
+  function show(id) { document.getElementById(id).classList.remove('hidden'); }
+
+  function hide(id) { document.getElementById(id).classList.add('hidden'); }
+
+  const DEC_PEEPS = [];
+
+  for (let p = 20; p >= 6; p -= 2) DEC_PEEPS.push(p);
+
+  let sw = { idx: 0, remaining: 30, running: false, interval: null, done: false };
+
+  function buildSwChips() {
+
+    const el = document.getElementById('sw-chips');
+
+    if (!el) return;
+
+    el.innerHTML = DEC_PEEPS.map((p, i) => {
+
+      let cls = 'background:var(--bg3);border-color:var(--border2);color:var(--text2);';
+
+      if (i < sw.idx) cls = 'background:var(--green-light);border-color:var(--green-border);color:var(--green-text);';
+
+      else if (i === sw.idx && !sw.done) cls = 'background:var(--accent-light);border-color:var(--accent-border);color:var(--accent-text);font-weight:700;';
+
+      return `<div style="border-radius:7px;border:1px solid;padding:5px 10px;font-size:13px;text-align:center;${cls}">${i < sw.idx ? '✓ ' : ''}${p}<span style="font-size:10px;margin-left:2px;">cmH₂O</span></div>`;
+
+    }).join('');
+
+  }
+
+  function swUpdateDisplay() {
+
+    const peep = DEC_PEEPS[sw.idx];
+
+    const ring = document.getElementById('sw-ring');
+
+    const cnt = document.getElementById('sw-count');
+
+    const peepEl = document.getElementById('sw-peep');
+
+    const btn = document.getElementById('sw-btn');
+
+    if (!cnt) return;
+
+    const elapsed = 30 - sw.remaining;
+
+    const offset = 163.4 - (163.4 * elapsed / 30);
+
+    ring.setAttribute('stroke-dashoffset', offset.toFixed(1));
+
+    ring.setAttribute('stroke', sw.remaining <= 5 ? 'var(--red)' : 'var(--accent)');
+
+    cnt.textContent = sw.remaining;
+
+    cnt.style.color = sw.remaining <= 5 ? 'var(--red)' : 'var(--accent-text)';
+
+    peepEl.textContent = sw.done ? '✓' : peep;
+
+    peepEl.style.color = sw.done ? 'var(--green-text)' : 'var(--accent-text)';
+
+    btn.textContent = sw.done ? '完成' : (sw.running ? '⏸ 暫停' : (sw.remaining < 30 || sw.idx > 0 ? '▶ 繼續' : '▶ 開始'));
+
+    btn.style.background = sw.done ? 'var(--green-light)' : 'var(--accent-light)';
+
+    btn.style.borderColor = sw.done ? 'var(--green-border)' : 'var(--accent-border)';
+
+    btn.style.color = sw.done ? 'var(--green-text)' : 'var(--accent-text)';
+
+    buildSwChips();
+
+  }
+
+  function swToggle() {
+
+    if (sw.done) return;
+
+    if (sw.running) {
+
+      clearInterval(sw.interval);
+
+      sw.running = false;
+
+      swUpdateDisplay();
+
+    } else {
+
+      sw.running = true;
+
+      swUpdateDisplay();
+
+      sw.interval = setInterval(() => {
+
+        sw.remaining--;
+
+        swUpdateDisplay();
+
+        if (sw.remaining <= 0) {
+
+          if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+
+          sw.idx++;
+
+          if (sw.idx >= DEC_PEEPS.length) {
+
+            clearInterval(sw.interval);
+
+            sw.running = false;
+
+            sw.done = true;
+
+            swUpdateDisplay();
+
+          } else {
+
+            sw.remaining = 30;
+
+            swUpdateDisplay();
+
+          }
+
+        }
+
+      }, 1000);
+
+    }
+
+  }
+
+  function swReset() {
+
+    clearInterval(sw.interval);
+
+    sw = { idx: 0, remaining: 30, running: false, interval: null, done: false };
+
+    swUpdateDisplay();
+
+  }
+
+  swUpdateDisplay();
+
+</script>
+
+</body>
+
+</html>

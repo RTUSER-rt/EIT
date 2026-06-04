@@ -448,6 +448,7 @@
         <li>完成翻身與完整抽痰</li>
         <li>氣囊壓力維持於 30 cmH₂O</li>
         <li>RASS ≤ −3（適時給予鎮靜劑 / 肌肉鬆弛劑）</li>
+        <li>確認病人血行動力學穩定</li>
         <li>綁帶置於 4–6 肋間（腋窩下 5 cm，兩乳頭位置）</li>
         <li>確認 Enhance Contrast 綁帶位置正確</li>
         <li>仰臥：參考電極置腹部；俯臥：置右手</li>
@@ -456,6 +457,42 @@
       <div class="alert red" style="margin-top:14px;margin-bottom:0;">
         <strong>操作期間嚴禁</strong>
         拍痰、抽痰、咳嗽、翻身、蒸氣吸藥、自主呼吸、呼吸器管路脫落
+      </div>
+    </div>
+  </div>
+
+  <!-- 操作前測量 -->
+  <div class="step-block">
+    <div class="step-header">
+      <div class="step-badge prep">PRE</div>
+      <div>
+        <div class="step-title">操作前呼吸器參數記錄</div>
+        <div class="step-desc">VCV 6 ml/kg（Ti-pause 0.5 sec）下測量，並抽 ABG</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="mode-box">
+        在原本的 <span class="param">VCV 6 ml/kg-PBW</span> 下，執行 iHold ≥ 2 秒 取得 Pplat，記錄以下參數後再進行 Step 1。
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">操作前 Pplat (cmH₂O)</label>
+          <input type="number" id="pre-pplat" placeholder="例：22">
+        </div>
+        <div class="field">
+          <label class="field-label">操作前 Cstat (ml/cmH₂O)</label>
+          <input type="number" id="pre-cstat" placeholder="例：35">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">操作前 Cdyn (ml/cmH₂O)</label>
+          <input type="number" id="pre-cdyn" placeholder="例：30">
+        </div>
+        <div class="field">
+          <label class="field-label">操作前 ABG — PaO₂/FiO₂ (P/F ratio)</label>
+          <input type="number" id="pre-pf" placeholder="例：180">
+        </div>
       </div>
     </div>
   </div>
@@ -474,7 +511,10 @@
         <span class="lbl">模式 </span><span class="param">VCV</span> &nbsp;|&nbsp;
         <span class="lbl">VC </span><span class="param" id="s1-vt">—</span> ml &nbsp;|&nbsp;
         <span class="lbl">Flow </span><span class="param">5 L/min</span> &nbsp;|&nbsp;
-        <span class="lbl">PEEP </span><span class="param">5 cmH₂O</span>
+        <span class="lbl">PEEP </span><span class="param">5 cmH₂O</span><br>
+        <span class="lbl">RR </span><span class="param">1 bpm</span> &nbsp;|&nbsp;
+        <span class="lbl">Ti-pause </span><span class="param">0 sec</span> &nbsp;|&nbsp;
+        <span class="lbl">Waveform </span><span class="param">Square</span>
       </div>
       <div class="alert blue">
         切換 P-V loop 視窗，待完成一次呼吸循環後截圖。<br>
@@ -514,15 +554,29 @@
         <span class="lbl">模式 </span><span class="param">VCV</span> &nbsp;|&nbsp;
         <span class="lbl">PEEPhigh </span><span class="param" id="s2-ph">—</span> cmH₂O &nbsp;|&nbsp;
         <span class="lbl">PEEPlow </span><span class="param" id="s2-pl">—</span> cmH₂O<br>
-        <span class="lbl">VC </span><span class="param" id="s2-vt">—</span> ml（6 ml/kg-PBW）
+        <span class="lbl">VC </span><span class="param" id="s2-vt">—</span> ml（6 ml/kg-PBW）&nbsp;|&nbsp;
+        <span class="lbl">RR </span><span class="param">6–8 bpm</span>（不產生 auto-PEEP）&nbsp;|&nbsp;
+        <span class="lbl">T-pause </span><span class="param">0.5 sec</span>
       </div>
       <div class="alert blue">
-        將 PEEP 從 PEEPhigh 直接降至 PEEPlow，紀錄兩者間 VT 差異（ΔVrec）及 PEEPlow 時的 Pplat。
+        ① 在 PEEPhigh 下記錄 TV 與 Pplat。<br>
+        ② 將 PEEP 從 PEEPhigh 直接降至 PEEPlow，記錄瞬間 TV（ΔVrec）。<br>
+        ③ 在 PEEPlow 下記錄 Pplat，計算 Crs 與 Crec。
       </div>
       <div class="field-row">
         <div class="field">
-          <label class="field-label">ΔVrec — VT 差（ml）</label>
-          <input type="number" id="dvrec" placeholder="例：120" oninput="calc()">
+          <label class="field-label">PEEPhigh 時 TV (ml)</label>
+          <input type="number" id="tv-high" placeholder="例：480" oninput="calc()">
+        </div>
+        <div class="field">
+          <label class="field-label">PEEPhigh 時 Pplat (cmH₂O)</label>
+          <input type="number" id="pplat-high" placeholder="例：28" oninput="calc()">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">ΔVrec — 降壓瞬間 TV（ml）</label>
+          <input type="number" id="dvrec" placeholder="例：600" oninput="calc()">
         </div>
         <div class="field">
           <label class="field-label">Pplat @ PEEPlow (cmH₂O)</label>
@@ -570,8 +624,8 @@
         <span class="lbl">FiO₂ </span><span class="param">100%</span>
       </div>
       <div class="field">
-        <label class="field-label">目前 PEEP 起始點 (cmH₂O)</label>
-        <input type="number" id="peep-start" placeholder="例：12" min="1" max="20" oninput="calc()">
+        <label class="field-label">目前 PEEP 起始點 (cmH₂O)　以原本設定的 PEEP 為起點，非 AOP</label>
+        <input type="number" id="peep-start" placeholder="例：8" min="1" max="20" oninput="calc()">
       </div>
       <div id="inc-seq" class="hidden">
         <div style="display:flex;gap:14px;align-items:stretch;margin-bottom:4px;">
@@ -627,7 +681,7 @@
       <div class="mode-box">
         <span class="lbl">模式 </span><span class="param">VCV</span> &nbsp;|&nbsp;
         <span class="lbl">VC </span><span class="param" id="s4-vt">—</span> ml &nbsp;|&nbsp;
-        <span class="lbl">RR </span><span class="param">20–30 bpm</span>（不產生 auto-PEEP）<br>
+        <span class="lbl">RR </span><span class="param">20 bpm</span>（不產生 auto-PEEP）<br>
         <span class="lbl">Ti </span><span class="param">0.8–0.9 sec</span> &nbsp;|&nbsp;
         <span class="lbl">FiO₂ </span><span class="param">100%</span>
       </div>
@@ -760,8 +814,55 @@
     </div>
   </div>
 
-</main>
+  <!-- 操作後測量 -->
+  <div class="step-block">
+    <div class="step-header">
+      <div class="step-badge prep">POST</div>
+      <div>
+        <div class="step-title">操作後呼吸器參數記錄</div>
+        <div class="step-desc">調整 PEEP 後 5 分鐘測量參數；1 小時後追蹤 ABG</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="section-label">操作後 5 分鐘</div>
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">Pplat (cmH₂O)</label>
+          <input type="number" id="post-pplat" placeholder="例：22" oninput="calcPost()">
+        </div>
+        <div class="field">
+          <label class="field-label">Cstat (ml/cmH₂O)</label>
+          <input type="number" id="post-cstat" placeholder="例：40" oninput="calcPost()">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">Cdyn (ml/cmH₂O)</label>
+          <input type="number" id="post-cdyn" placeholder="例：35" oninput="calcPost()">
+        </div>
+        <div class="field">
+          <label class="field-label">ΔEELI (EIT)</label>
+          <input type="number" id="post-eeli" placeholder="例：150" oninput="calcPost()">
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="section-label">操作後 1 小時</div>
+      <div class="field">
+        <label class="field-label">ABG — P/F ratio</label>
+        <input type="number" id="post-pf" placeholder="例：220" oninput="calcPost()">
+      </div>
+      <div id="post-compare" class="hidden" style="margin-top:14px;"></div>
+    </div>
+  </div>
 
+  <!-- 匯出按鈕 -->
+  <div style="padding: 8px 0 24px;">
+    <button onclick="exportExcel()" style="width:100%;padding:14px;font-size:15px;font-weight:600;background:var(--green-light);border:1px solid var(--green-border);border-radius:10px;color:var(--green-text);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+      <span>📊</span> 匯出 Excel 記錄表
+    </button>
+  </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
   let state = { pbw: null, vt: null, aop: null, peephigh: null, peeplow: null };
 
@@ -809,8 +910,9 @@
     if (!state.aop || isNaN(dvrec) || isNaN(pplat) || !state.vt) { hide('ri-result'); return; }
     const dp = state.peephigh - state.peeplow;
     if (dp === 0) return;
-    const crec = dvrec / dp;
+    // v2 Crec formula: (ΔVrec – Crs*(PEEPhigh-PEEPlow)) / (PEEPhigh-PEEPlow)
     const crs = state.vt / (pplat - state.peeplow);
+    const crec = (dvrec - crs * dp) / dp;
     const ri = crec / crs;
     document.getElementById('crec-val').textContent = crec.toFixed(1);
     document.getElementById('crs-val').textContent = crs > 0 ? crs.toFixed(1) : '—';
@@ -826,6 +928,35 @@
     }
     dec.style.display = 'block';
     show('ri-result');
+  }
+
+  function calcPost() {
+    const prePplat = parseFloat(document.getElementById('pre-pplat').value);
+    const preCstat = parseFloat(document.getElementById('pre-cstat').value);
+    const prePF    = parseFloat(document.getElementById('pre-pf').value);
+    const postPplat = parseFloat(document.getElementById('post-pplat').value);
+    const postCstat = parseFloat(document.getElementById('post-cstat').value);
+    const postPF    = parseFloat(document.getElementById('post-pf').value);
+    const box = document.getElementById('post-compare');
+    const hasPost = !isNaN(postPplat) || !isNaN(postCstat) || !isNaN(postPF);
+    if (!hasPost) { box.classList.add('hidden'); return; }
+    const diff = (pre, post, label, unit, higherBetter) => {
+      if (isNaN(pre) || isNaN(post)) return '';
+      const d = post - pre;
+      const better = higherBetter ? d > 0 : d < 0;
+      const color = better ? 'var(--green-text)' : (d === 0 ? 'var(--text2)' : 'var(--red)');
+      const sign = d > 0 ? '+' : '';
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;">
+        <span style="color:var(--text2);">${label}</span>
+        <span>${pre} → <span style="font-weight:600;">${post}</span> <span style="color:${color};font-size:12px;">(${sign}${d.toFixed(1)} ${unit})</span></span>
+      </div>`;
+    };
+    let html = '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--text3);margin-bottom:8px;">前後對照</div>';
+    html += diff(prePplat, postPplat, 'Pplat', 'cmH₂O', false);
+    html += diff(preCstat, postCstat, 'Cstat', 'ml/cmH₂O', true);
+    html += diff(prePF, postPF, 'P/F ratio', '', true);
+    box.innerHTML = html;
+    box.classList.remove('hidden');
   }
 
   function calcPEEPSeq() {
@@ -1073,6 +1204,94 @@
   }
 
   swUpdateDisplay();
+
+  function gv(id) {
+    const el = document.getElementById(id);
+    if (!el) return '';
+    const v = el.value;
+    return v === '' ? '' : (isNaN(parseFloat(v)) ? v : parseFloat(v));
+  }
+
+  function exportExcel() {
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('zh-TW') + ' ' + now.toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'});
+
+    // calc Crs and Crec for export
+    let crsVal = '', crecVal = '', riVal = '';
+    if (state.aop && state.vt) {
+      const dp = state.peephigh - state.peeplow;
+      const pplat = parseFloat(document.getElementById('pplat').value);
+      const dvrec = parseFloat(document.getElementById('dvrec').value);
+      if (!isNaN(pplat) && !isNaN(dvrec) && dp > 0) {
+        const crs = state.vt / (pplat - state.peeplow);
+        const crec = (dvrec - crs * dp) / dp;
+        crsVal = parseFloat(crs.toFixed(1));
+        crecVal = parseFloat(crec.toFixed(1));
+        riVal = parseFloat((crec/crs).toFixed(2));
+      }
+    }
+
+    const rows = [
+      ['EIT Guide — PEEP Titration 記錄表', '', '', '匯出時間：' + dateStr],
+      [],
+      ['── 病人基本資料 ──'],
+      ['身高 (cm)', gv('height'), '性別', document.getElementById('sex').value === 'M' ? '男' : '女'],
+      ['PBW (kg)', state.pbw ? parseFloat(state.pbw.toFixed(1)) : '', '實際設定 VT (ml)', gv('vt-actual')],
+      [],
+      ['── 操作前記錄 ──'],
+      ['Pplat 前 (cmH₂O)', gv('pre-pplat'), 'Cstat 前 (ml/cmH₂O)', gv('pre-cstat')],
+      ['Cdyn 前 (ml/cmH₂O)', gv('pre-cdyn'), 'P/F ratio 前', gv('pre-pf')],
+      [],
+      ['── Step 1：AOP ──'],
+      ['AOP (cmH₂O)', state.aop || ''],
+      [],
+      ['── Step 2：R/I ratio ──'],
+      ['PEEPhigh (cmH₂O)', state.peephigh || '', 'PEEPlow (cmH₂O)', state.peeplow || ''],
+      ['PEEPhigh TV (ml)', gv('tv-high'), 'PEEPhigh Pplat (cmH₂O)', gv('pplat-high')],
+      ['ΔVrec 降壓瞬間 TV (ml)', gv('dvrec'), 'PEEPlow Pplat (cmH₂O)', gv('pplat')],
+      ['Crs (ml/cmH₂O)', crsVal, 'Crec (ml/cmH₂O)', crecVal],
+      ['R/I ratio', riVal, '', riVal !== '' ? (riVal >= 0.5 ? 'High recruitability' : 'Low recruitability') : ''],
+      [],
+      ['── Step 6：EIT Diagnosis ──'],
+      ['Crossing point 最佳 PEEP (cmH₂O)', gv('optimal-peep'), 'UIP (cmH₂O)', gv('uip-input')],
+      ['AOP (ΔEELI) (cmH₂O)', gv('aop-raw')],
+      [],
+      ['── 操作後 5 分鐘記錄 ──'],
+      ['Pplat 後 (cmH₂O)', gv('post-pplat'), 'Cstat 後 (ml/cmH₂O)', gv('post-cstat')],
+      ['Cdyn 後 (ml/cmH₂O)', gv('post-cdyn'), 'ΔEELI (EIT)', gv('post-eeli')],
+      [],
+      ['── 操作後 1 小時 ──'],
+      ['P/F ratio 後', gv('post-pf')],
+    ];
+
+    // Add pre/post comparison if both exist
+    const prePplat = parseFloat(document.getElementById('pre-pplat').value);
+    const postPplat = parseFloat(document.getElementById('post-pplat').value);
+    const preCstat = parseFloat(document.getElementById('pre-cstat').value);
+    const postCstat = parseFloat(document.getElementById('post-cstat').value);
+    const prePF = parseFloat(document.getElementById('pre-pf').value);
+    const postPF = parseFloat(document.getElementById('post-pf').value);
+    if (!isNaN(prePplat) && !isNaN(postPplat)) {
+      rows.push([]);
+      rows.push(['── 前後對照 ──']);
+      rows.push(['項目', '操作前', '操作後', '變化']);
+      if (!isNaN(prePplat) && !isNaN(postPplat)) rows.push(['Pplat (cmH₂O)', prePplat, postPplat, parseFloat((postPplat-prePplat).toFixed(1))]);
+      if (!isNaN(preCstat) && !isNaN(postCstat)) rows.push(['Cstat (ml/cmH₂O)', preCstat, postCstat, parseFloat((postCstat-preCstat).toFixed(1))]);
+      if (!isNaN(prePF) && !isNaN(postPF)) rows.push(['P/F ratio', prePF, postPF, parseFloat((postPF-prePF).toFixed(1))]);
+    }
+
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+
+    // Column widths
+    ws['!cols'] = [{wch:28},{wch:16},{wch:28},{wch:20}];
+
+    // Title style
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'EIT PEEP Titration');
+
+    const today = now.toISOString().slice(0,10);
+    XLSX.writeFile(wb, `EIT_PEEP_Titration_${today}.xlsx`);
+  }
 </script>
 </body>
 </html>

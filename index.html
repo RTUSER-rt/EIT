@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -136,8 +135,7 @@
     font-size: 11px;
     font-weight: 600;
     color: var(--text2);
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
+    letter-spacing: 0.3px;
     margin-bottom: 6px;
   }
   .field-row { display: flex; gap: 10px; }
@@ -174,7 +172,7 @@
   .rcard.amber { background: var(--amber-light); border-color: var(--amber-border); }
   .rcard.red   { background: var(--red-light);   border-color: var(--red-border); }
 
-  .rcard-label { font-size: 11px; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+  .rcard-label { font-size: 11px; color: var(--text2); font-weight: 600; letter-spacing: 0.3px; margin-bottom: 4px; }
   .rcard-value { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; line-height: 1; }
   .rcard.blue .rcard-value { color: var(--accent-text); }
   .rcard.green .rcard-value { color: var(--green-text); }
@@ -199,20 +197,24 @@
 
   .checklist { list-style: none; }
   .checklist li {
-    display: flex; align-items: center; gap: 10px;
-    padding: 9px 0;
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0;
     font-size: 13px; color: var(--text2);
     border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.15s;
   }
   .checklist li:last-child { border-bottom: none; }
-  .checklist li::before {
-    content: '';
-    width: 16px; height: 16px;
-    border: 1.5px solid var(--border2);
-    border-radius: 4px;
+  .checklist li.checked { color: var(--text3); text-decoration: line-through; }
+  .check-box {
+    font-size: 18px;
+    color: var(--border2);
     flex-shrink: 0;
-    background: var(--bg);
+    line-height: 1;
+    transition: color 0.15s;
   }
+  .checklist li.checked .check-box { color: var(--green); }
 
   .stop-list { list-style: none; }
   .stop-list li {
@@ -226,7 +228,7 @@
 
   .section-label {
     font-size: 11px; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.6px;
+    letter-spacing: 0.3px;
     color: var(--text3);
     margin-bottom: 10px;
   }
@@ -418,6 +420,10 @@
             <option value="F">女</option>
           </select>
         </div>
+        <div class="field">
+          <label class="field-label">病歷號（選填）</label>
+          <input type="text" id="mrn" placeholder="選填">
+        </div>
       </div>
 
       <div id="pbw-row" class="hidden">
@@ -444,14 +450,14 @@
 
       <div class="divider"></div>
       <div class="section-label">執行前確認清單</div>
-      <ul class="checklist">
-        <li>完成翻身與完整抽痰</li>
-        <li>氣囊壓力維持於 30 cmH₂O</li>
-        <li>RASS ≤ −3（適時給予鎮靜劑 / 肌肉鬆弛劑）</li>
-        <li>確認病人血行動力學穩定</li>
-        <li>綁帶置於 4–6 肋間（腋窩下 5 cm，兩乳頭位置）</li>
-        <li>確認 Enhance Contrast 綁帶位置正確</li>
-        <li>仰臥：參考電極置腹部；俯臥：置右手</li>
+      <ul class="checklist" id="checklist">
+        <li onclick="toggleCheck(this)"><span class="check-box">☐</span><span>完成翻身與完整抽痰</span></li>
+        <li onclick="toggleCheck(this)"><span class="check-box">☐</span><span>氣囊壓力維持於 30 cmH₂O</span></li>
+        <li onclick="toggleCheck(this)"><span class="check-box">☐</span><span>RASS ≤ −3（適時給予鎮靜劑 / 肌肉鬆弛劑）</span></li>
+        <li onclick="toggleCheck(this)"><span class="check-box">☐</span><span>確認病人血行動力學穩定</span></li>
+        <li onclick="toggleCheck(this)"><span class="check-box">☐</span><span>綁帶置於 4–6 肋間（腋窩下 5 cm，兩乳頭位置）</span></li>
+        <li onclick="toggleCheck(this)"><span class="check-box">☐</span><span>確認 Enhance Contrast 綁帶位置正確</span></li>
+        <li onclick="toggleCheck(this)"><span class="check-box">☐</span><span>參考電極：仰臥置腹部；俯臥置右手</span></li>
       </ul>
 
       <div class="alert red" style="margin-top:14px;margin-bottom:0;">
@@ -477,21 +483,40 @@
       <div class="field-row">
         <div class="field">
           <label class="field-label">操作前 Pplat (cmH₂O)</label>
-          <input type="number" id="pre-pplat" placeholder="例：22">
+          <input type="number" id="pre-pplat" placeholder="例：22" oninput="calcPreComp()">
         </div>
         <div class="field">
-          <label class="field-label">操作前 Cstat (ml/cmH₂O)</label>
-          <input type="number" id="pre-cstat" placeholder="例：35">
-        </div>
+          <label class="field-label">操作前 PIP (cmH₂O)</label>
+          <input type="number" id="pre-pip" placeholder="例：26" oninput="calcPreComp()">        </div>
       </div>
       <div class="field-row">
         <div class="field">
-          <label class="field-label">操作前 Cdyn (ml/cmH₂O)</label>
-          <input type="number" id="pre-cdyn" placeholder="例：30">
+          <label class="field-label">操作前 PEEP (cmH₂O)</label>
+          <input type="number" id="pre-peep" placeholder="例：8" oninput="calcPreComp()">
         </div>
         <div class="field">
-          <label class="field-label">操作前 ABG — PaO₂/FiO₂ (P/F ratio)</label>
+          <label class="field-label">操作前 ABG — P/F ratio</label>
           <input type="number" id="pre-pf" placeholder="例：180">
+        </div>
+      </div>
+      <div id="pre-comp-row" class="result-row">
+        <div class="rcard blue">
+          <div class="rcard-label">Cstat (ml/cmH₂O)</div>
+          <div style="font-size:12px;color:var(--text2);margin:6px 0 8px;">VT ÷ (Pplat − PEEP) = <span id="pre-cstat-val" style="font-weight:600;color:var(--accent-text);">—</span></div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:11px;color:var(--text2);">或直接輸入：</span>
+            <input type="number" id="pre-cstat" placeholder="覆蓋"
+              style="width:80px;border:none;border-bottom:1px solid var(--accent-border);background:transparent;font-size:13px;color:var(--accent-text);outline:none;padding:2px 0;">
+          </div>
+        </div>
+        <div class="rcard blue">
+          <div class="rcard-label">Cdyn (ml/cmH₂O)</div>
+          <div style="font-size:12px;color:var(--text2);margin:6px 0 8px;">VT ÷ (PIP − PEEP) = <span id="pre-cdyn-val" style="font-weight:600;color:var(--accent-text);">—</span></div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:11px;color:var(--text2);">或直接輸入：</span>
+            <input type="number" id="pre-cdyn" placeholder="覆蓋"
+              style="width:80px;border:none;border-bottom:1px solid var(--accent-border);background:transparent;font-size:13px;color:var(--accent-text);outline:none;padding:2px 0;">
+          </div>
         </div>
       </div>
     </div>
@@ -511,14 +536,13 @@
         <span class="lbl">模式 </span><span class="param">VCV</span> &nbsp;|&nbsp;
         <span class="lbl">VC </span><span class="param" id="s1-vt">—</span> ml &nbsp;|&nbsp;
         <span class="lbl">Flow </span><span class="param">5 L/min</span> &nbsp;|&nbsp;
-        <span class="lbl">PEEP </span><span class="param">5 cmH₂O</span><br>
+        <span class="lbl">PEEP </span><span class="param">5 cmH₂O</span> &nbsp;|&nbsp;
         <span class="lbl">RR </span><span class="param">1 bpm</span> &nbsp;|&nbsp;
         <span class="lbl">Ti-pause </span><span class="param">0 sec</span> &nbsp;|&nbsp;
         <span class="lbl">Waveform </span><span class="param">Square</span>
       </div>
       <div class="alert blue">
-        切換 P-V loop 視窗，待完成一次呼吸循環後截圖。<br>
-        找 VT 增加 ≥ 4 ml 的轉折點為 AOP；若無轉折點，設 AOP = 5 cmH₂O。
+        切換 P-V loop 視窗，待完成一次呼吸循環後截圖。<span style="color:var(--red);font-weight:600;">找 VT 增加 ≥ 4 ml 的轉折點為 AOP</span>；若無轉折點，設 AOP = 5 cmH₂O。
       </div>
       <div class="field">
         <label class="field-label">量測到的 AOP (cmH₂O)　若無轉折點請輸入 5</label>
@@ -553,46 +577,51 @@
       <div class="mode-box">
         <span class="lbl">模式 </span><span class="param">VCV</span> &nbsp;|&nbsp;
         <span class="lbl">PEEPhigh </span><span class="param" id="s2-ph">—</span> cmH₂O &nbsp;|&nbsp;
-        <span class="lbl">PEEPlow </span><span class="param" id="s2-pl">—</span> cmH₂O<br>
+        <span class="lbl">PEEPlow </span><span class="param" id="s2-pl">—</span> cmH₂O &nbsp;|&nbsp;
         <span class="lbl">VC </span><span class="param" id="s2-vt">—</span> ml（6 ml/kg-PBW）&nbsp;|&nbsp;
         <span class="lbl">RR </span><span class="param">6–8 bpm</span>（不產生 auto-PEEP）&nbsp;|&nbsp;
         <span class="lbl">T-pause </span><span class="param">0.5 sec</span>
       </div>
       <div class="alert blue">
-        ① 在 PEEPhigh 下記錄 TV 與 Pplat。<br>
-        ② 將 PEEP 從 PEEPhigh 直接降至 PEEPlow，記錄瞬間 TV（ΔVrec）。<br>
-        ③ 在 PEEPlow 下記錄 Pplat，計算 Crs 與 Crec。
+        ① 在 PEEPhigh 下記錄 Pplat，待 PEEP 升至最高點後記錄呼氣 TV（TV_exp）。② 將 PEEP 從 PEEPhigh 直接降至 PEEPlow。③ 在 PEEPlow 下記錄 Pplat 與吸氣 TV（TV_inflate），計算 Crs、Crec 與 ΔVrec（= TV_exp − TV_inflate）。
       </div>
       <div class="field-row">
-        <div class="field">
-          <label class="field-label">PEEPhigh 時 TV (ml)</label>
-          <input type="number" id="tv-high" placeholder="例：480" oninput="calc()">
-        </div>
         <div class="field">
           <label class="field-label">PEEPhigh 時 Pplat (cmH₂O)</label>
           <input type="number" id="pplat-high" placeholder="例：28" oninput="calc()">
         </div>
+        <div class="field">
+          <label class="field-label">TV (ml)_exp at PEEPhigh（估算 ΔEELV）</label>
+          <input type="number" id="dvrec" placeholder="例：600" oninput="calc()">
+        </div>
       </div>
       <div class="field-row">
         <div class="field">
-          <label class="field-label">ΔVrec — 降壓瞬間 TV（ml）</label>
-          <input type="number" id="dvrec" placeholder="例：600" oninput="calc()">
+          <label class="field-label">PEEPlow 時 Pplat (cmH₂O)</label>
+          <input type="number" id="pplat" placeholder="例：18" oninput="calc()">
         </div>
         <div class="field">
-          <label class="field-label">Pplat @ PEEPlow (cmH₂O)</label>
-          <input type="number" id="pplat" placeholder="例：18" oninput="calc()">
+          <label class="field-label">TV (ml)_inflate at PEEPlow</label>
+          <input type="number" id="tv-low" placeholder="例：480" oninput="calc()">
         </div>
       </div>
       <div id="ri-result" class="hidden">
-        <div class="result-row triple">
+        <div class="result-row" style="grid-template-columns:1fr 1fr;">
           <div class="rcard blue">
-            <div class="rcard-label">Crec</div>
-            <div class="rcard-value" id="crec-val">—</div>
-            <div class="rcard-unit">ml/cmH₂O</div>
+            <div class="rcard-label">ΔVrec</div>
+            <div class="rcard-value" id="dvrec-calc-val">—</div>
+            <div class="rcard-unit">降壓瞬間 TV − PEEPlow TV (ml)</div>
           </div>
           <div class="rcard blue">
             <div class="rcard-label">Crs</div>
             <div class="rcard-value" id="crs-val">—</div>
+            <div class="rcard-unit">ml/cmH₂O</div>
+          </div>
+        </div>
+        <div class="result-row" style="grid-template-columns:1fr 1fr;margin-top:10px;">
+          <div class="rcard blue">
+            <div class="rcard-label">Crec</div>
+            <div class="rcard-value" id="crec-val">—</div>
             <div class="rcard-unit">ml/cmH₂O</div>
           </div>
           <div class="rcard" id="ri-card">
@@ -681,7 +710,7 @@
       <div class="mode-box">
         <span class="lbl">模式 </span><span class="param">VCV</span> &nbsp;|&nbsp;
         <span class="lbl">VC </span><span class="param" id="s4-vt">—</span> ml &nbsp;|&nbsp;
-        <span class="lbl">RR </span><span class="param">20 bpm</span>（不產生 auto-PEEP）<br>
+        <span class="lbl">RR </span><span class="param">20 bpm</span>（不產生 auto-PEEP）&nbsp;|&nbsp;
         <span class="lbl">Ti </span><span class="param">0.8–0.9 sec</span> &nbsp;|&nbsp;
         <span class="lbl">FiO₂ </span><span class="param">100%</span>
       </div>
@@ -733,7 +762,7 @@
         <span class="lbl">模式 </span><span class="param">PCV</span> &nbsp;|&nbsp;
         <span class="lbl">PC </span><span class="param">15 cmH₂O</span> &nbsp;|&nbsp;
         <span class="lbl">RR </span><span class="param">10 bpm</span> &nbsp;|&nbsp;
-        <span class="lbl">I:E </span><span class="param">1:1（Ti 3 sec）</span><br>
+        <span class="lbl">I:E </span><span class="param">1:1（Ti 3 sec）</span> &nbsp;|&nbsp;
         <span class="lbl">FiO₂ </span><span class="param">維持 SpO₂ &gt; 90%</span>
       </div>
       <div style="display:flex;gap:14px;align-items:stretch;margin-bottom:4px;">
@@ -808,8 +837,7 @@
 
       <div id="lpv-box" class="alert green hidden">
         <strong>後續 Lung Protective Ventilation 設定原則</strong>
-        PC level ≤ 15 cmH₂O，或 VC target 4–6 ml/kg-PBW（= <span id="lpv-vt">依 PBW 計算</span>）<br>
-        持續觀察 ΔEELI 在設定 PEEP 下應維持穩定。
+        PC level ≤ 15 cmH₂O，或 VC target 4–6 ml/kg-PBW（= <span id="lpv-vt">依 PBW 計算</span>）。持續觀察 ΔEELI 在設定 PEEP 下應維持穩定。
       </div>
     </div>
   </div>
@@ -828,21 +856,41 @@
       <div class="field-row">
         <div class="field">
           <label class="field-label">Pplat (cmH₂O)</label>
-          <input type="number" id="post-pplat" placeholder="例：22" oninput="calcPost()">
+          <input type="number" id="post-pplat" placeholder="例：22" oninput="calcPostComp()">
         </div>
         <div class="field">
-          <label class="field-label">Cstat (ml/cmH₂O)</label>
-          <input type="number" id="post-cstat" placeholder="例：40" oninput="calcPost()">
+          <label class="field-label">PIP (cmH₂O)</label>
+          <input type="number" id="post-pip" placeholder="例：26" oninput="calcPostComp()">
         </div>
       </div>
       <div class="field-row">
         <div class="field">
-          <label class="field-label">Cdyn (ml/cmH₂O)</label>
-          <input type="number" id="post-cdyn" placeholder="例：35" oninput="calcPost()">
+          <label class="field-label">PEEP (cmH₂O)</label>
+          <input type="number" id="post-peep" placeholder="例：10" oninput="calcPostComp()">
         </div>
         <div class="field">
           <label class="field-label">ΔEELI (EIT)</label>
           <input type="number" id="post-eeli" placeholder="例：150" oninput="calcPost()">
+        </div>
+      </div>
+      <div id="post-comp-row" class="result-row">
+        <div class="rcard green">
+          <div class="rcard-label">Cstat (ml/cmH₂O)</div>
+          <div style="font-size:12px;color:var(--text2);margin:6px 0 8px;">VT ÷ (Pplat − PEEP) = <span id="post-cstat-val" style="font-weight:600;color:var(--green-text);">—</span></div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:11px;color:var(--text2);">或直接輸入：</span>
+            <input type="number" id="post-cstat" placeholder="覆蓋"
+              style="width:80px;border:none;border-bottom:1px solid var(--green-border);background:transparent;font-size:13px;color:var(--green-text);outline:none;padding:2px 0;" oninput="calcPost()">
+          </div>
+        </div>
+        <div class="rcard green">
+          <div class="rcard-label">Cdyn (ml/cmH₂O)</div>
+          <div style="font-size:12px;color:var(--text2);margin:6px 0 8px;">VT ÷ (PIP − PEEP) = <span id="post-cdyn-val" style="font-weight:600;color:var(--green-text);">—</span></div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:11px;color:var(--text2);">或直接輸入：</span>
+            <input type="number" id="post-cdyn" placeholder="覆蓋"
+              style="width:80px;border:none;border-bottom:1px solid var(--green-border);background:transparent;font-size:13px;color:var(--green-text);outline:none;padding:2px 0;" oninput="calcPost()">
+          </div>
         </div>
       </div>
       <div class="divider"></div>
@@ -866,6 +914,11 @@
 <script>
   let state = { pbw: null, vt: null, aop: null, peephigh: null, peeplow: null };
 
+  function toggleCheck(li) {
+    const checked = li.classList.toggle('checked');
+    li.querySelector('.check-box').textContent = checked ? '☑' : '☐';
+  }
+
   function calc() {
     calcPBW(); calcAOP(); calcRI(); calcPEEPSeq(); calcFinal(); updateProgress();
   }
@@ -888,6 +941,7 @@
     document.getElementById('s2-vt').textContent = state.vt;
     document.getElementById('s4-vt').textContent = state.vt;
     document.getElementById('lpv-vt').textContent = Math.round(state.pbw*4) + '–' + Math.round(state.pbw*6) + ' ml';
+    calcPreComp(); calcPostComp();
   }
 
   function calcAOP() {
@@ -902,26 +956,30 @@
     document.getElementById('s2-ph').textContent = state.peephigh;
     document.getElementById('s2-pl').textContent = state.peeplow;
     show('aop-result');
+    // rebuild S3 sequence if start already entered
+    if (document.getElementById('peep-start').value) calcPEEPSeq();
   }
 
   function calcRI() {
-    const dvrec = parseFloat(document.getElementById('dvrec').value);
-    const pplat = parseFloat(document.getElementById('pplat').value);
-    if (!state.aop || isNaN(dvrec) || isNaN(pplat) || !state.vt) { hide('ri-result'); return; }
+    const dvrec    = parseFloat(document.getElementById('dvrec').value);   // 降壓瞬間 TV
+    const tvLow    = parseFloat(document.getElementById('tv-low').value);   // PEEPlow 時 TV
+    const pplat    = parseFloat(document.getElementById('pplat').value);    // PEEPlow 時 Pplat
+    if (!state.aop || isNaN(dvrec) || isNaN(tvLow) || isNaN(pplat)) { hide('ri-result'); return; }
     const dp = state.peephigh - state.peeplow;
     if (dp === 0) return;
-    // v2 Crec formula: (ΔVrec – Crs*(PEEPhigh-PEEPlow)) / (PEEPhigh-PEEPlow)
-    const crs = state.vt / (pplat - state.peeplow);
-    const crec = (dvrec - crs * dp) / dp;
-    const ri = crec / crs;
+    const deltaVrec = dvrec - tvLow;                                        // ΔVrec = 降壓瞬間 TV − PEEPlow TV
+    const crs  = tvLow / (pplat - state.peeplow);                          // Crs = PEEPlow TV / (Pplat − PEEPlow)
+    const crec = (deltaVrec - crs * dp) / dp;
+    const ri   = crec / crs;
+    document.getElementById('dvrec-calc-val').textContent = deltaVrec.toFixed(0);
     document.getElementById('crec-val').textContent = crec.toFixed(1);
-    document.getElementById('crs-val').textContent = crs > 0 ? crs.toFixed(1) : '—';
-    document.getElementById('ri-val').textContent = ri > 0 ? ri.toFixed(2) : '—';
+    document.getElementById('crs-val').textContent  = crs > 0 ? crs.toFixed(1) : '—';
+    document.getElementById('ri-val').textContent   = ri > 0 ? ri.toFixed(2) : '—';
     const card = document.getElementById('ri-card');
-    const dec = document.getElementById('ri-decision');
+    const dec  = document.getElementById('ri-decision');
     if (ri < 0.5) {
       card.className = 'rcard amber';
-      dec.innerHTML = '<div class="alert amber"><strong>R/I &lt; 0.5 → Low recruitability</strong>無需執行 EIT-guided PEEP titration。<br>依照 <strong>Low PEEP / High FiO₂</strong> table 調整即可。</div>';
+      dec.innerHTML = '<div class="alert amber"><strong>R/I &lt; 0.5 → Low recruitability</strong>無需執行 EIT-guided PEEP titration。依照 <strong>Low PEEP / High FiO₂</strong> table 調整即可。</div>';
     } else {
       card.className = 'rcard green';
       dec.innerHTML = '<div class="alert green"><strong>R/I ≥ 0.5 → High recruitability</strong>繼續執行 EIT-guided PEEP titration（Step 3 → 6）。</div>';
@@ -930,12 +988,56 @@
     show('ri-result');
   }
 
+  function getVT() {
+    const actual = parseFloat(document.getElementById('vt-actual')?.value);
+    if (!isNaN(actual) && actual > 0) return actual;
+    const v6 = parseFloat(document.getElementById('vt6-val')?.textContent);
+    if (!isNaN(v6) && v6 > 0) return v6;
+    return state.vt;
+  }
+
+  function calcPreComp() {
+    const pplat = parseFloat(document.getElementById('pre-pplat').value);
+    const pip   = parseFloat(document.getElementById('pre-pip').value);
+    const peep  = parseFloat(document.getElementById('pre-peep').value);
+    const vt    = getVT();
+    if (vt && !isNaN(pplat) && !isNaN(peep) && (pplat - peep) > 0) {
+      document.getElementById('pre-cstat-val').textContent = (vt / (pplat - peep)).toFixed(1);
+    } else { document.getElementById('pre-cstat-val').textContent = '—'; }
+    if (vt && !isNaN(pip) && !isNaN(peep) && (pip - peep) > 0) {
+      document.getElementById('pre-cdyn-val').textContent = (vt / (pip - peep)).toFixed(1);
+    } else { document.getElementById('pre-cdyn-val').textContent = '—'; }
+  }
+
+  function calcPostComp() {
+    const pplat = parseFloat(document.getElementById('post-pplat').value);
+    const pip   = parseFloat(document.getElementById('post-pip').value);
+    const peep  = parseFloat(document.getElementById('post-peep').value);
+    const vt    = getVT();
+    if (vt && !isNaN(pplat) && !isNaN(peep) && (pplat - peep) > 0) {
+      document.getElementById('post-cstat-val').textContent = (vt / (pplat - peep)).toFixed(1);
+    } else { document.getElementById('post-cstat-val').textContent = '—'; }
+    if (vt && !isNaN(pip) && !isNaN(peep) && (pip - peep) > 0) {
+      document.getElementById('post-cdyn-val').textContent = (vt / (pip - peep)).toFixed(1);
+    } else { document.getElementById('post-cdyn-val').textContent = '—'; }
+    calcPost();
+  }
+
+  function getVal(calcId, manualId) {
+    // prefer manual input, fallback to calculated display value
+    const manual = parseFloat(document.getElementById(manualId)?.value);
+    if (!isNaN(manual)) return manual;
+    const calcText = document.getElementById(calcId)?.textContent;
+    const calc = parseFloat(calcText);
+    return isNaN(calc) ? NaN : calc;
+  }
+
   function calcPost() {
-    const prePplat = parseFloat(document.getElementById('pre-pplat').value);
-    const preCstat = parseFloat(document.getElementById('pre-cstat').value);
-    const prePF    = parseFloat(document.getElementById('pre-pf').value);
+    const prePplat  = parseFloat(document.getElementById('pre-pplat').value);
+    const preCstat  = getVal('pre-cstat-val', 'pre-cstat');
+    const prePF     = parseFloat(document.getElementById('pre-pf').value);
     const postPplat = parseFloat(document.getElementById('post-pplat').value);
-    const postCstat = parseFloat(document.getElementById('post-cstat').value);
+    const postCstat = getVal('post-cstat-val', 'post-cstat');
     const postPF    = parseFloat(document.getElementById('post-pf').value);
     const box = document.getElementById('post-compare');
     const hasPost = !isNaN(postPplat) || !isNaN(postCstat) || !isNaN(postPF);
@@ -962,9 +1064,25 @@
   function calcPEEPSeq() {
     const start = parseInt(document.getElementById('peep-start').value);
     if (isNaN(start) || start < 1) { hide('inc-seq'); return; }
-    // build S3 peep list dynamically
-    s3Peeps = [];
-    for (let p = start; p <= 20; p += 2) s3Peeps.push(p);
+
+    // Build sequence: start → (insert AOP if AOP > start) → continue +2 to 20
+    const aop = state.aop;
+    const seq = [];
+    seq.push(start);
+    // If AOP exists and is higher than start and not already in sequence
+    if (aop && aop > start && !seq.includes(aop)) {
+      seq.push(aop);
+    }
+    // Continue from last value +2 up to 20
+    let last = seq[seq.length - 1];
+    // next even step after last
+    let next = last % 2 === 0 ? last + 2 : last + (2 - last % 2);
+    while (next <= 20) {
+      seq.push(next);
+      next += 2;
+    }
+
+    s3Peeps = seq;
     s3Reset();
     show('inc-seq');
   }
@@ -978,12 +1096,16 @@
     if (!el) return;
     el.innerHTML = s3Peeps.map((p, i) => {
       const pip = p + 15;
-      let bg = i < s3.idx ? 'background:var(--green-light);border-color:var(--green-border);color:var(--green-text);'
-             : i === s3.idx && !s3.done ? 'background:var(--accent-light);border-color:var(--accent-border);color:var(--accent-text);font-weight:700;'
-             : pip > 35 ? 'background:var(--amber-light);border-color:var(--amber-border);color:var(--amber-text);'
-             : 'background:var(--bg3);border-color:var(--border2);color:var(--text2);';
+      const isAOP = state.aop && p === state.aop && i > 0;
+      let bg = i < s3.idx
+        ? 'background:var(--green-light);border-color:var(--green-border);color:var(--green-text);'
+        : i === s3.idx && !s3.done
+          ? 'background:var(--accent-light);border-color:var(--accent-border);color:var(--accent-text);font-weight:700;'
+          : pip > 35
+            ? 'background:var(--amber-light);border-color:var(--amber-border);color:var(--amber-text);'
+            : 'background:var(--bg3);border-color:var(--border2);color:var(--text2);';
       return `<div style="border-radius:7px;border:1px solid;padding:5px 10px;font-size:13px;text-align:center;${bg}">
-        ${i < s3.idx ? '✓ ' : ''}${p}<span style="font-size:10px;margin-left:2px;">/ PIP ${pip}</span>
+        ${i < s3.idx ? '✓ ' : ''}${p}${isAOP ? '<div style="font-size:9px;margin-top:1px;">AOP</div>' : `<div style="font-size:9px;margin-top:1px;">PIP ${pip}</div>`}
       </div>`;
     }).join('');
   }
@@ -1216,79 +1338,94 @@
     const now = new Date();
     const dateStr = now.toLocaleDateString('zh-TW') + ' ' + now.toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'});
 
-    // calc Crs and Crec for export
-    let crsVal = '', crecVal = '', riVal = '';
-    if (state.aop && state.vt) {
-      const dp = state.peephigh - state.peeplow;
-      const pplat = parseFloat(document.getElementById('pplat').value);
-      const dvrec = parseFloat(document.getElementById('dvrec').value);
-      if (!isNaN(pplat) && !isNaN(dvrec) && dp > 0) {
-        const crs = state.vt / (pplat - state.peeplow);
-        const crec = (dvrec - crs * dp) / dp;
-        crsVal = parseFloat(crs.toFixed(1));
-        crecVal = parseFloat(crec.toFixed(1));
-        riVal = parseFloat((crec/crs).toFixed(2));
-      }
-    }
+    // Read calculated R/I values from display
+    const crsVal   = parseFloat(document.getElementById('crs-val')?.textContent) || '';
+    const crecVal  = parseFloat(document.getElementById('crec-val')?.textContent) || '';
+    const riVal    = parseFloat(document.getElementById('ri-val')?.textContent) || '';
+    const dvrecCalc = parseFloat(document.getElementById('dvrec-calc-val')?.textContent) || '';
+
+    const sex = document.getElementById('sex').value === 'M' ? '男' : '女';
+    const vtActual = gv('vt-actual') || (state.vt ? state.vt : '');
+
+    const preCstat = getVal('pre-cstat-val','pre-cstat');
+    const preCdyn  = getVal('pre-cdyn-val','pre-cdyn');
+    const postCstat = getVal('post-cstat-val','post-cstat');
+    const postCdyn  = getVal('post-cdyn-val','post-cdyn');
 
     const rows = [
       ['EIT Guide — PEEP Titration 記錄表', '', '', '匯出時間：' + dateStr],
       [],
-      ['── 病人基本資料 ──'],
-      ['身高 (cm)', gv('height'), '性別', document.getElementById('sex').value === 'M' ? '男' : '女'],
-      ['PBW (kg)', state.pbw ? parseFloat(state.pbw.toFixed(1)) : '', '實際設定 VT (ml)', gv('vt-actual')],
+      // 病人基本資料
+      ['【病人基本資料】'],
+      ['身高 (cm)', gv('height'), '性別', sex],
+      ['PBW (kg)', state.pbw ? parseFloat(state.pbw.toFixed(1)) : '', '實際設定 VT (ml)', vtActual],
+      ['病歷號', document.getElementById('mrn').value || '', '', ''],
       [],
-      ['── 操作前記錄 ──'],
-      ['Pplat 前 (cmH₂O)', gv('pre-pplat'), 'Cstat 前 (ml/cmH₂O)', gv('pre-cstat')],
-      ['Cdyn 前 (ml/cmH₂O)', gv('pre-cdyn'), 'P/F ratio 前', gv('pre-pf')],
+      // 操作前
+      ['【操作前記錄】'],
+      ['Pplat (cmH₂O)', gv('pre-pplat'), 'PIP (cmH₂O)', gv('pre-pip')],
+      ['PEEP (cmH₂O)', gv('pre-peep'), 'P/F ratio', gv('pre-pf')],
+      ['Cstat (ml/cmH₂O)', preCstat, 'Cdyn (ml/cmH₂O)', preCdyn],
       [],
-      ['── Step 1：AOP ──'],
+      // Step 1
+      ['【Step 1 — AOP】'],
       ['AOP (cmH₂O)', state.aop || ''],
       [],
-      ['── Step 2：R/I ratio ──'],
+      // Step 2
+      ['【Step 2 — R/I ratio】'],
       ['PEEPhigh (cmH₂O)', state.peephigh || '', 'PEEPlow (cmH₂O)', state.peeplow || ''],
-      ['PEEPhigh TV (ml)', gv('tv-high'), 'PEEPhigh Pplat (cmH₂O)', gv('pplat-high')],
-      ['ΔVrec 降壓瞬間 TV (ml)', gv('dvrec'), 'PEEPlow Pplat (cmH₂O)', gv('pplat')],
+      ['PEEPhigh 時 Pplat (cmH₂O)', gv('pplat-high'), 'TV_exp at PEEPhigh (ml)', gv('dvrec')],
+      ['PEEPlow 時 Pplat (cmH₂O)', gv('pplat'), 'TV_inflate at PEEPlow (ml)', gv('tv-low')],
+      ['ΔVrec (TV_exp − TV_inflate) (ml)', dvrecCalc, '', ''],
       ['Crs (ml/cmH₂O)', crsVal, 'Crec (ml/cmH₂O)', crecVal],
-      ['R/I ratio', riVal, '', riVal !== '' ? (riVal >= 0.5 ? 'High recruitability' : 'Low recruitability') : ''],
+      ['R/I ratio', riVal, '判斷', riVal !== '' ? (riVal >= 0.5 ? 'High recruitability' : 'Low recruitability') : ''],
       [],
-      ['── Step 6：EIT Diagnosis ──'],
+      // Step 3
+      ['【Step 3 — Incremental PEEP trial】'],
+      ['起始 PEEP (cmH₂O)', gv('peep-start'), 'PEEP 序列', s3Peeps.join(' → ')],
+      [],
+      // Step 6
+      ['【Step 6 — EIT Diagnosis】'],
       ['Crossing point 最佳 PEEP (cmH₂O)', gv('optimal-peep'), 'UIP (cmH₂O)', gv('uip-input')],
-      ['AOP (ΔEELI) (cmH₂O)', gv('aop-raw')],
+      ['AOP (ΔEELI) (cmH₂O)', gv('aop-raw'), '', ''],
       [],
-      ['── 操作後 5 分鐘記錄 ──'],
-      ['Pplat 後 (cmH₂O)', gv('post-pplat'), 'Cstat 後 (ml/cmH₂O)', gv('post-cstat')],
-      ['Cdyn 後 (ml/cmH₂O)', gv('post-cdyn'), 'ΔEELI (EIT)', gv('post-eeli')],
+      // 操作後 5 分鐘
+      ['【操作後 5 分鐘】'],
+      ['Pplat (cmH₂O)', gv('post-pplat'), 'PIP (cmH₂O)', gv('post-pip')],
+      ['PEEP (cmH₂O)', gv('post-peep'), 'ΔEELI (EIT)', gv('post-eeli')],
+      ['Cstat (ml/cmH₂O)', postCstat, 'Cdyn (ml/cmH₂O)', postCdyn],
       [],
-      ['── 操作後 1 小時 ──'],
-      ['P/F ratio 後', gv('post-pf')],
+      // 操作後 1 小時
+      ['【操作後 1 小時】'],
+      ['P/F ratio', gv('post-pf'), '', ''],
     ];
 
-    // Add pre/post comparison if both exist
-    const prePplat = parseFloat(document.getElementById('pre-pplat').value);
+    // 前後對照
+    const prePplat  = parseFloat(document.getElementById('pre-pplat').value);
     const postPplat = parseFloat(document.getElementById('post-pplat').value);
-    const preCstat = parseFloat(document.getElementById('pre-cstat').value);
-    const postCstat = parseFloat(document.getElementById('post-cstat').value);
-    const prePF = parseFloat(document.getElementById('pre-pf').value);
-    const postPF = parseFloat(document.getElementById('post-pf').value);
-    if (!isNaN(prePplat) && !isNaN(postPplat)) {
+    const prePF     = parseFloat(document.getElementById('pre-pf').value);
+    const postPF    = parseFloat(document.getElementById('post-pf').value);
+    const hasCompare = (!isNaN(prePplat) && !isNaN(postPplat)) ||
+                       (!isNaN(preCstat) && !isNaN(postCstat)) ||
+                       (!isNaN(prePF) && !isNaN(postPF));
+    if (hasCompare) {
       rows.push([]);
-      rows.push(['── 前後對照 ──']);
+      rows.push(['【前後對照】']);
       rows.push(['項目', '操作前', '操作後', '變化']);
-      if (!isNaN(prePplat) && !isNaN(postPplat)) rows.push(['Pplat (cmH₂O)', prePplat, postPplat, parseFloat((postPplat-prePplat).toFixed(1))]);
-      if (!isNaN(preCstat) && !isNaN(postCstat)) rows.push(['Cstat (ml/cmH₂O)', preCstat, postCstat, parseFloat((postCstat-preCstat).toFixed(1))]);
-      if (!isNaN(prePF) && !isNaN(postPF)) rows.push(['P/F ratio', prePF, postPF, parseFloat((postPF-prePF).toFixed(1))]);
+      const cmp = (label, pre, post, unit='') => {
+        if (isNaN(pre) || isNaN(post)) return;
+        rows.push([label, pre, post, parseFloat((post - pre).toFixed(1))]);
+      };
+      cmp('Pplat (cmH₂O)', prePplat, postPplat);
+      cmp('Cstat (ml/cmH₂O)', preCstat, postCstat);
+      cmp('Cdyn (ml/cmH₂O)', preCdyn, postCdyn);
+      cmp('P/F ratio', prePF, postPF);
     }
 
     const ws = XLSX.utils.aoa_to_sheet(rows);
-
-    // Column widths
-    ws['!cols'] = [{wch:28},{wch:16},{wch:28},{wch:20}];
-
-    // Title style
+    ws['!cols'] = [{wch:30},{wch:16},{wch:30},{wch:20}];
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'EIT PEEP Titration');
-
     const today = now.toISOString().slice(0,10);
     XLSX.writeFile(wb, `EIT_PEEP_Titration_${today}.xlsx`);
   }

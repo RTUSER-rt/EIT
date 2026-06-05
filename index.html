@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -141,7 +142,7 @@
   .field-row { display: flex; gap: 10px; }
   .field-row .field { flex: 1; margin-bottom: 0; }
 
-  input[type="number"], select {
+  input[type="number"], input[type="text"], select {
     width: 100%;
     background: var(--bg);
     border: 1px solid var(--border2);
@@ -153,7 +154,7 @@
     transition: border-color 0.15s, box-shadow 0.15s;
     -webkit-appearance: none;
   }
-  input[type="number"]:focus, select:focus {
+  input[type="number"]:focus, input[type="text"]:focus, select:focus {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px var(--accent-light);
   }
@@ -420,10 +421,10 @@
             <option value="F">女</option>
           </select>
         </div>
-        <div class="field">
-          <label class="field-label">病歷號（選填）</label>
-          <input type="text" id="mrn" placeholder="選填">
-        </div>
+      </div>
+      <div class="field" style="margin-bottom:14px;">
+        <label class="field-label">病歷號（選填）</label>
+        <input type="text" id="mrn" placeholder="選填" style="width:100%;">
       </div>
 
       <div id="pbw-row" class="hidden">
@@ -492,7 +493,7 @@
       <div class="field-row">
         <div class="field">
           <label class="field-label">操作前 PEEP (cmH₂O)</label>
-          <input type="number" id="pre-peep" placeholder="例：8" oninput="calcPreComp()">
+          <input type="number" id="pre-peep" placeholder="例：8" oninput="calcPreComp(); syncS3PEEP();">
         </div>
         <div class="field">
           <label class="field-label">操作前 ABG — P/F ratio</label>
@@ -654,7 +655,8 @@
       </div>
       <div class="field">
         <label class="field-label">目前 PEEP 起始點 (cmH₂O)　以原本設定的 PEEP 為起點，非 AOP</label>
-        <input type="number" id="peep-start" placeholder="例：8" min="1" max="20" oninput="calc()">
+        <input type="number" id="peep-start" placeholder="例：8" min="1" max="20" oninput="document.getElementById('peep-start-hint').textContent=''; calc()">
+        <div id="peep-start-hint" style="font-size:11px;color:var(--accent-text);margin-top:4px;"></div>
       </div>
       <div id="inc-seq" class="hidden">
         <div style="display:flex;gap:14px;align-items:stretch;margin-bottom:4px;">
@@ -941,7 +943,7 @@
     document.getElementById('s2-vt').textContent = state.vt;
     document.getElementById('s4-vt').textContent = state.vt;
     document.getElementById('lpv-vt').textContent = Math.round(state.pbw*4) + '–' + Math.round(state.pbw*6) + ' ml';
-    calcPreComp(); calcPostComp();
+    calcPreComp(); calcPostComp(); syncS3PEEP();
   }
 
   function calcAOP() {
@@ -994,6 +996,18 @@
     const v6 = parseFloat(document.getElementById('vt6-val')?.textContent);
     if (!isNaN(v6) && v6 > 0) return v6;
     return state.vt;
+  }
+
+  function syncS3PEEP() {
+    const peep = parseFloat(document.getElementById('pre-peep').value);
+    if (isNaN(peep) || peep <= 0) return;
+    const rounded = peep % 2 === 0 ? peep : peep + 1;
+    document.getElementById('peep-start').value = rounded;
+    const hint = document.getElementById('peep-start-hint');
+    if (hint) hint.textContent = peep % 2 !== 0
+      ? `（原本 PEEP ${peep}，奇數自動進位至 ${rounded}）`
+      : `（從操作前 PEEP ${peep} 帶入）`;
+    calcPEEPSeq();
   }
 
   function calcPreComp() {

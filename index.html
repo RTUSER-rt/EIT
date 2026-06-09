@@ -818,7 +818,7 @@
       <div class="step-badge">S5</div>
       <div>
         <div class="step-title">Re-recruitment — 重新開啟肺臟</div>
-        <div class="step-desc">每次 +5 cmH₂O，各維持 1 分鐘，直到 PEEP = 20 cmH₂O</div>
+        <div class="step-desc">每次 +5 cmH₂O，各維持 1 分鐘，直到 PEEP = 20 cmH₂O（從 10 開始）</div>
       </div>
     </div>
     <div class="step-body">
@@ -1296,7 +1296,7 @@
   }
 
   // ── S5 stopwatch (60 sec re-recruitment) ──
-  const S5_PEEPS = [5, 10, 15, 20];
+  const S5_PEEPS = [10, 15, 20];
   let s5 = { idx: 0, remaining: 60, running: false, interval: null, done: false };
 
   function s5BuildChips() {

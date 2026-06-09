@@ -1017,13 +1017,18 @@
   <!-- 匯出按鈕 -->
   
 
-  <div style="padding: 8px 0 24px;">
+  <div style="padding: 8px 0 24px;display:flex;flex-direction:column;gap:10px;">
     <button onclick="exportExcel()" style="width:100%;padding:14px;font-size:15px;font-weight:600;background:var(--green-light);border:1px solid var(--green-border);border-radius:10px;color:var(--green-text);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
       <span>📊</span> 匯出 Excel 記錄表
+    </button>
+    <button onclick="exportToSheets()" style="width:100%;padding:14px;font-size:15px;font-weight:600;background:var(--accent-light);border:1px solid var(--accent-border);border-radius:10px;color:var(--accent-text);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+      <span>☁️</span> 儲存至 Google Sheets
     </button>
   </div>
 
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://apis.google.com/js/api.js" async defer></script>
 <script>
   let state = { pbw: null, vt: null, aop: null, peephigh: null, peeplow: null };
 
@@ -1584,6 +1589,95 @@
     swUpdateDisplay();
     document.getElementById('op-date').value = new Date().toISOString().slice(0,10);
   });
+
+  // ── Google Sheets Export ──
+  const GSHEETS_CLIENT_ID = '646385623450-23aaon0hp98lj11ricddihblqa5lfvq1.apps.googleusercontent.com';
+  const GSHEETS_SHEET_ID  = '1YB2e1WX9kEm6QrWK3KhXQ9HnFXlRDo3erLu8UK0MrZo';
+  const GSHEETS_SCOPE     = 'https://www.googleapis.com/auth/spreadsheets';
+  let gsheetsToken = null;
+
+  function exportToSheets() {
+    if (!window.google) { alert('Google 服務未載入，請確認網路連線後重試。'); return; }
+    google.accounts.oauth2.initTokenClient({
+      client_id: GSHEETS_CLIENT_ID,
+      scope: GSHEETS_SCOPE,
+      callback: function(response) {
+        if (response.error) { alert('授權失敗：' + response.error); return; }
+        gsheetsToken = response.access_token;
+        doSheetsExport();
+      }
+    }).requestAccessToken();
+  }
+
+  function doSheetsExport() {
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('zh-TW') + ' ' + now.toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'});
+    const sex = document.getElementById('sex').value === 'M' ? '男' : '女';
+    const riVal = document.getElementById('ri-val')?.textContent.trim();
+    const riNum = parseFloat(riVal);
+    const riJudge = isNaN(riNum) ? '' : (riNum >= 0.5 ? 'High recruitability' : 'Low recruitability');
+
+    // Build flat row for Sheets (one row per operation)
+    const row = [
+      dateStr,
+      document.getElementById('mrn').value || '',
+      document.getElementById('op-date').value || '',
+      gv('height'), sex, state.pbw ? parseFloat(state.pbw.toFixed(1)) : '',
+      gv('vt-actual'),
+      gv('pre-pplat'), gv('pre-pip'), gv('pre-peep'), gv('pre-pf'),
+      gv('aop-raw'),
+      gv('tv-ph'), gv('dvrec'), gv('pplat'), gv('tv-low'),
+      document.getElementById('crs-val')?.textContent.trim() || '',
+      document.getElementById('crec-val')?.textContent.trim() || '',
+      riVal || '', riJudge,
+      gv('peep-start'),
+      document.getElementById('s3-side-effect')?.value || '',
+      gv('optimal-peep'), gv('uip-input'),
+      gv('post-pplat'), gv('post-pip'), gv('post-peep'), gv('post-eeli'),
+      document.getElementById('post-cstat-val')?.textContent.trim() || '',
+      document.getElementById('post-cdyn-val')?.textContent.trim() || '',
+      gv('post-pf')
+    ];
+
+    // Check if header row exists, if not add it first
+    const headers = [
+      '匯出時間','病歷號','操作日期','身高(cm)','性別','PBW(kg)','實際VT(ml)',
+      'PRE Pplat','PRE PIP','PRE PEEP','PRE P/F',
+      'AOP',
+      'TV_PH','First exhaled TV','PEEPlow Pplat','VT_PL',
+      'Crs','Crec','R/I ratio','判斷',
+      'S3起始PEEP','副作用記錄',
+      'Crossing PEEP','UIP',
+      'POST Pplat','POST PIP','POST PEEP','POST ΔEELI','POST Cstat','POST Cdyn','POST P/F'
+    ];
+
+    // First check if sheet is empty
+    fetch(`https://sheets.googleapis.com/v4/spreadsheets/${GSHEETS_SHEET_ID}/values/A1:A1`, {
+      headers: { 'Authorization': 'Bearer ' + gsheetsToken }
+    })
+    .then(r => r.json())
+    .then(data => {
+      const isEmpty = !data.values || data.values.length === 0;
+      const rowsToAppend = isEmpty ? [headers, row] : [row];
+      return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${GSHEETS_SHEET_ID}/values/A:A:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + gsheetsToken,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ values: rowsToAppend })
+      });
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.updates) {
+        alert('✓ 已成功儲存至 Google Sheets！');
+      } else {
+        alert('儲存失敗：' + JSON.stringify(data.error || data));
+      }
+    })
+    .catch(e => alert('儲存失敗：' + e.message));
+  }
 
   function gv(id) {
     const el = document.getElementById(id);

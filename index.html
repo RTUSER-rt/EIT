@@ -459,7 +459,7 @@
         <li onclick="toggleCheck(this)"><span class="check-box">☐</span><span>完成翻身與完整抽痰</span></li>
         <li onclick="toggleCheck(this)"><span class="check-box">☐</span><span>氣囊壓力維持於 30 cmH₂O</span></li>
         <li onclick="toggleCheck(this)"><span class="check-box">☐</span><span>RASS ≤ −3（適時給予鎮靜劑 / 肌肉鬆弛劑）</span></li>
-        <li onclick="toggleCheck(this)"><span class="check-box">☐</span><span>確認病人血行動力學穩定</span></li>
+        <li onclick="toggleCheck(this)"><span class="check-box">☐</span><span>確認病人血行動力學穩定，可考慮使用升壓劑維持 MAP ≥ 65 mmHg</span></li>
         <li onclick="toggleCheck(this)"><span class="check-box">☐</span><span>綁帶置於 4–6 肋間（腋窩下 5 cm，兩乳頭位置）</span></li>
         <li onclick="toggleCheck(this)"><span class="check-box">☐</span><span>確認 Enhance Contrast 綁帶位置正確</span></li>
         <li onclick="toggleCheck(this)"><span class="check-box">☐</span><span>參考電極：仰臥置腹部；俯臥置右手</span></li>
@@ -851,6 +851,9 @@
       <div class="alert blue" style="margin-bottom:16px;">
         在 ΔEELI-trend view 中，觀察 Decremental trial 階段 ΔEELI 變化量最大的 PEEP 值，即為 <span style="font-weight:600;">UIP</span>。最終 PEEP 應介於 <span style="font-weight:600;">AOP</span> 與 <span style="font-weight:600;">UIP</span> 之間，並確認 ΔEELI 在此 PEEP 維持穩定。
       </div>
+      <div class="alert green" style="margin-bottom:16px;">
+        <strong>Record</strong> ΔEELI during Incremental &amp; Decremental PEEP trial、Crossing PEEP point（OD/CL method）
+      </div>
 
       <div class="field-row">
         <div class="field">
@@ -871,7 +874,7 @@
       </div>
 
       <div id="lpv-box" class="alert green hidden">
-        <strong>後續 Lung Protective Ventilation 設定原則</strong>
+        <strong>回復原模式，依 EIT-guided individual PEEP 調整</strong>
         PC level ≤ 15 cmH₂O，或 VC target 4–6 ml/kg-PBW（= <span id="lpv-vt">依 PBW 計算</span>）。持續觀察 ΔEELI 在設定 PEEP 下應維持穩定。
       </div>
     </div>
@@ -888,6 +891,30 @@
     </div>
     <div class="step-body">
       <div class="section-label">操作後 5 分鐘</div>
+
+      <!-- 5 min countdown timer -->
+      <div style="display:flex;gap:12px;align-items:stretch;margin-bottom:16px;">
+        <div style="flex:0 0 auto;background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:110px;">
+          <div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:6px;">倒數</div>
+          <div id="post-timer-count" style="font-size:42px;font-weight:800;line-height:1;color:var(--green-text);font-variant-numeric:tabular-nums;">5:00</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px;">分鐘</div>
+          <svg width="56" height="56" style="margin-top:10px;">
+            <circle cx="28" cy="28" r="22" fill="none" stroke="var(--border)" stroke-width="4"/>
+            <circle id="post-timer-ring" cx="28" cy="28" r="22" fill="none" stroke="var(--green)" stroke-width="4"
+              stroke-dasharray="138.2" stroke-dashoffset="0"
+              stroke-linecap="round" transform="rotate(-90 28 28)" style="transition:stroke-dashoffset 1s linear;"/>
+          </svg>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;gap:8px;">
+            <button id="post-timer-btn" onclick="postTimerToggle()" style="flex:1;padding:12px;font-size:14px;font-weight:600;border:1px solid var(--green-border);border-radius:8px;background:var(--green-light);color:var(--green-text);cursor:pointer;">▶ 開始計時</button>
+            <button onclick="postTimerReset()" style="padding:12px 14px;font-size:14px;border:1px solid var(--border2);border-radius:8px;background:var(--bg);color:var(--text2);cursor:pointer;">↺</button>
+          </div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.6;">
+            PEEP 調整後啟動，5 分鐘後測量以下參數。
+          </div>
+        </div>
+      </div>
       <div class="field-row">
         <div class="field">
           <label class="field-label">Pplat (cmH₂O)</label>
@@ -935,6 +962,26 @@
         <input type="number" id="post-pf" placeholder="例：220" oninput="calcPost()">
       </div>
       <div id="post-compare" class="hidden" style="margin-top:14px;"></div>
+    </div>
+  </div>
+
+  <!-- Reference -->
+  <div class="step-block">
+    <div class="step-header">
+      <div class="step-badge prep">REF</div>
+      <div>
+        <div class="step-title">Reference</div>
+      </div>
+    </div>
+    <div class="step-body" style="font-size:12px;color:var(--text2);line-height:1.8;">
+      <div style="margin-bottom:10px;">
+        <span style="color:var(--accent-text);font-weight:600;">Step 1 — AOP</span><br>
+        Chen, L., Del Sorbo, L., Grieco, D. L., Shklar, O., Junhasavasdikul, D., Telias, I., Fan, E., &amp; Brochard, L. (2018). Airway Closure in Acute Respiratory Distress Syndrome: An Underestimated and Misinterpreted Phenomenon. <em>American Journal of Respiratory and Critical Care Medicine</em>, 197(1), 132–136. <span style="color:var(--text3);">https://doi.org/10.1164/rccm.201702-0388LE</span>
+      </div>
+      <div>
+        <span style="color:var(--accent-text);font-weight:600;">Step 2 — R/I ratio</span><br>
+        Chen, L., Del Sorbo, L., Grieco, D. L., Junhasavasdikul, D., Rittayamai, N., Soliman, I., Sklar, M. C., Rauseo, M., Ferguson, N. D., Fan, E., Richard, J. M., &amp; Brochard, L. (2020). Potential for Lung Recruitment Estimated by the Recruitment-to-Inflation Ratio in Acute Respiratory Distress Syndrome. <em>American Journal of Respiratory and Critical Care Medicine</em>, 201(2), 178–187. <span style="color:var(--text3);">https://doi.org/10.1164/rccm.201902-0334OC</span>
+      </div>
     </div>
   </div>
 
@@ -1193,7 +1240,7 @@
         s3.remaining--;
         s3UpdateDisplay();
         if (s3.remaining <= 0) {
-          if (navigator.vibrate) navigator.vibrate([200,100,200]);
+          if (navigator.vibrate) navigator.vibrate([300, 100, 300, 100, 300]);
           s3.idx++;
           if (s3.idx >= s3Peeps.length) {
             clearInterval(s3.interval); s3.running = false; s3.done = true; s3UpdateDisplay();
@@ -1254,7 +1301,7 @@
         s5.remaining--;
         s5UpdateDisplay();
         if (s5.remaining <= 0) {
-          if (navigator.vibrate) navigator.vibrate([200,100,200]);
+          if (navigator.vibrate) navigator.vibrate([300, 100, 300, 100, 300]);
           s5.idx++;
           if (s5.idx >= S5_PEEPS.length) {
             clearInterval(s5.interval); s5.running = false; s5.done = true; s5UpdateDisplay();
@@ -1272,7 +1319,66 @@
 
   s5UpdateDisplay();
 
-  // Auto-set today's date
+  // ── POST 5-min countdown timer ──
+  const POST_TOTAL = 300; // 5 minutes in seconds
+  let postTimer = { remaining: POST_TOTAL, running: false, interval: null, done: false };
+
+  function postTimerUpdate() {
+    const cnt = document.getElementById('post-timer-count');
+    const ring = document.getElementById('post-timer-ring');
+    const btn = document.getElementById('post-timer-btn');
+    if (!cnt) return;
+    const m = Math.floor(postTimer.remaining / 60);
+    const s = postTimer.remaining % 60;
+    cnt.textContent = m + ':' + String(s).padStart(2,'0');
+    const elapsed = POST_TOTAL - postTimer.remaining;
+    const offset = 138.2 * (postTimer.remaining / POST_TOTAL);
+    ring.setAttribute('stroke-dashoffset', offset.toFixed(1));
+    const isLow = postTimer.remaining <= 30;
+    cnt.style.color = postTimer.done ? 'var(--green-text)' : (isLow ? 'var(--red)' : 'var(--green-text)');
+    ring.setAttribute('stroke', postTimer.done ? 'var(--green)' : (isLow ? 'var(--red)' : 'var(--green)'));
+    if (postTimer.done) {
+      btn.textContent = '✓ 完成，請測量參數';
+      btn.style.background = 'var(--green-light)';
+      btn.style.borderColor = 'var(--green-border)';
+      btn.style.color = 'var(--green-text)';
+    } else if (postTimer.running) {
+      btn.textContent = '⏸ 暫停';
+    } else {
+      btn.textContent = postTimer.remaining < POST_TOTAL ? '▶ 繼續' : '▶ 開始計時';
+    }
+  }
+
+  function postTimerToggle() {
+    if (postTimer.done) return;
+    if (postTimer.running) {
+      clearInterval(postTimer.interval);
+      postTimer.running = false;
+      postTimerUpdate();
+    } else {
+      postTimer.running = true;
+      postTimerUpdate();
+      postTimer.interval = setInterval(() => {
+        postTimer.remaining--;
+        postTimerUpdate();
+        if (postTimer.remaining <= 0) {
+          clearInterval(postTimer.interval);
+          postTimer.running = false;
+          postTimer.done = true;
+          postTimerUpdate();
+          if (navigator.vibrate) navigator.vibrate([300, 100, 300, 100, 300]);
+        }
+      }, 1000);
+    }
+  }
+
+  function postTimerReset() {
+    clearInterval(postTimer.interval);
+    postTimer = { remaining: POST_TOTAL, running: false, interval: null, done: false };
+    postTimerUpdate();
+  }
+
+  postTimerUpdate();
   document.getElementById('op-date').value = new Date().toISOString().slice(0,10);
 
   function calcFinal() {
@@ -1357,7 +1463,7 @@
         sw.remaining--;
         swUpdateDisplay();
         if (sw.remaining <= 0) {
-          if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+          if (navigator.vibrate) navigator.vibrate([300, 100, 300, 100, 300]);
           sw.idx++;
           if (sw.idx >= DEC_PEEPS.length) {
             clearInterval(sw.interval);

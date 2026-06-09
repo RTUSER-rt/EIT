@@ -585,14 +585,20 @@
     <div class="step-body">
       <div class="mode-box">
         <span class="lbl">模式 </span><span class="param">VCV</span> &nbsp;|&nbsp;
-        <span class="lbl">PEEPhigh </span><span class="param" id="s2-ph">—</span> cmH₂O &nbsp;|&nbsp;
-        <span class="lbl">PEEPlow </span><span class="param" id="s2-pl">—</span> cmH₂O &nbsp;|&nbsp;
         <span class="lbl">VC </span><span class="param" id="s2-vt">—</span> ml（6 ml/kg-PBW）&nbsp;|&nbsp;
-        <span class="lbl">RR </span><span class="param">6–8 bpm</span>（不產生 auto-PEEP）&nbsp;|&nbsp;
-        <span class="lbl">T-pause </span><span class="param">0.5 sec</span>
+        <span class="lbl">RR </span><span class="param">6–8 bpm</span> &nbsp;|&nbsp;
+        <span class="lbl">Flow </span><span class="param">60 L/min</span> &nbsp;|&nbsp;
+        <span class="lbl">T-pause </span><span class="param">0.5 sec</span> &nbsp;|&nbsp;
+        <span class="lbl">PEEPhigh </span><span class="param" id="s2-ph">—</span> cmH₂O（AOP + 10，上限 20）&nbsp;|&nbsp;
+        <span class="lbl">PEEPlow </span><span class="param" id="s2-pl">—</span> cmH₂O（= AOP，下限 5）
       </div>
       <div class="alert blue">
-        ① PEEPhigh 維持 5 分鐘後記錄 TV_PH 與 Pplat。② 將 PEEP 從 PEEPhigh <span style="color:var(--red);font-weight:700;">立即</span>切換至 PEEPlow，記錄<span style="color:var(--red);font-weight:700;">第一口</span>呼氣 TV（First exhaled TV）。③ 待 PEEPlow 平衡後記錄 Pplat 與 VT_PL，計算 Crs、Crec 與 R/I ratio。
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <div>① 模式設定如上，平衡後開始操作。</div>
+          <div>② PEEPhigh 維持 <span style="font-weight:600;">5 分鐘</span>後記錄 TV_PH 與 Pplat<sub>PH</sub>。</div>
+          <div>③ PEEPhigh <span style="color:var(--red);font-weight:700;">立即</span>降至 PEEPlow，記錄<span style="color:var(--red);font-weight:700;">第一口</span>呼氣 TV（First exhaled TV）。</div>
+          <div>④ 待 PEEPlow 平衡後記錄 Pplat 與 VT_PL，計算 Crs、Crec 與 R/I ratio。</div>
+        </div>
       </div>
       <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:14px 16px;margin-bottom:16px;font-size:13px;line-height:2.2;">
         <div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:8px;">計算公式</div>
@@ -613,21 +619,15 @@
           <input type="number" id="tv-ph" placeholder="例：480" oninput="calc()">
         </div>
         <div class="field">
-          <label class="field-label">PEEPhigh 時 Pplat (cmH₂O)</label>
-          <input type="number" id="pplat-high" placeholder="例：28" oninput="calc()">
-        </div>
-      </div>
-      <div class="field-row">
-        <div class="field">
           <label class="field-label">First exhaled TV — 降至 PEEPlow 第一口呼氣 (ml)</label>
           <input type="number" id="dvrec" placeholder="例：620" oninput="calc()">
         </div>
+      </div>
+      <div class="field-row">
         <div class="field">
           <label class="field-label">PEEPlow 時 Pplat (cmH₂O)</label>
           <input type="number" id="pplat" placeholder="例：18" oninput="calc()">
         </div>
-      </div>
-      <div class="field-row">
         <div class="field">
           <label class="field-label">VT_PL — PEEPlow 平衡後 TV (ml)</label>
           <input type="number" id="tv-low" placeholder="例：480" oninput="calc()">
@@ -1432,9 +1432,8 @@
       ['模式', 'VCV', 'Flow', '60 L/min'],
       ['RR (bpm)', '6–8', 'T-pause (sec)', '0.5'],
       ['PEEPhigh (cmH₂O)', state.peephigh || '', 'PEEPlow (cmH₂O)', state.peeplow || ''],
-      ['TV_PH — PEEPhigh 時 TV (ml)', gv('tv-ph'), 'PEEPhigh 時 Pplat (cmH₂O)', gv('pplat-high')],
-      ['First exhaled TV (ml)', gv('dvrec'), 'PEEPlow 時 Pplat (cmH₂O)', gv('pplat')],
-      ['VT_PL — PEEPlow 平衡後 TV (ml)', gv('tv-low'), '', ''],
+      ['TV_PH — PEEPhigh 時 TV (ml)', gv('tv-ph'), 'First exhaled TV (ml)', gv('dvrec')],
+      ['PEEPlow 時 Pplat (cmH₂O)', gv('pplat'), 'VT_PL — PEEPlow 平衡後 TV (ml)', gv('tv-low')],
       ['ΔVrec (ml)', dvrecCalc, '', ''],
       ['Crs (ml/cmH₂O)', crsVal, 'Crec (ml/cmH₂O)', crecVal],
       ['R/I ratio', riVal, '判斷', riJudge],

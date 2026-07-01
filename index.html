@@ -451,8 +451,8 @@
             </div>
           </div>
           <div class="rcard blue">
-            <div class="rcard-label">實際設定 VT</div>
-            <input type="number" id="vt-actual" placeholder="輸入實際值"
+            <div class="rcard-label">VT set</div>
+            <input type="number" id="vt-actual" placeholder="VT set"
               style="width:100%;background:transparent;border:none;border-bottom:1.5px solid var(--accent-border);border-radius:0;padding:4px 0;font-size:22px;font-weight:700;color:var(--accent-text);outline:none;margin-top:4px;"
               oninput="calc()">
             <div class="rcard-unit" style="margin-top:4px;">ml（供後續計算使用）</div>
@@ -488,7 +488,7 @@
       <div class="step-badge prep">PRE</div>
       <div>
         <div class="step-title">操作前呼吸器參數記錄</div>
-        <div class="step-desc">VCV 6 ml/kg，Square waveform，Inspiratory hold ≥ 2 sec 取得 Pplat，並抽 ABG</div>
+        <div class="step-desc">VCV 6 ml/kg，Square waveform，Inspiratory hold ≥ 2 sec 取得 Pplat；記錄 TVmeasure 計算 Cdyn 和 Cstat；並抽 ABG</div>
       </div>
     </div>
     <div class="step-body">
@@ -510,14 +510,15 @@
           <input type="number" id="pre-peep" placeholder="例：8" oninput="calcPreComp(); syncS3PEEP();">
         </div>
         <div class="field">
-          <label class="field-label">操作前 ABG &lt;P/F ratio&gt;</label>
+          <label class="field-label">進ICU第一筆ABG &lt;P/F ratio&gt;</label>
           <input type="number" id="pre-pf" placeholder="例：180">
         </div>
       </div>
       <div id="pre-comp-row" class="result-row">
         <div class="rcard blue">
           <div class="rcard-label">Cstat (ml/cmH₂O)</div>
-          <div style="font-size:12px;color:var(--text2);margin:6px 0 8px;">VT ÷ (Pplat − PEEP) = <span id="pre-cstat-val" style="font-weight:600;color:var(--accent-text);">—</span></div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">TVmeasure to calculate</div>
+          <div style="font-size:12px;color:var(--text2);margin:4px 0 8px;">VT ÷ (Pplat − PEEP) = <span id="pre-cstat-val" style="font-weight:600;color:var(--accent-text);">—</span></div>
           <div style="display:flex;align-items:center;gap:6px;">
             <span style="font-size:11px;color:var(--text2);">或直接輸入：</span>
             <input type="number" id="pre-cstat" placeholder="覆蓋"
@@ -526,7 +527,8 @@
         </div>
         <div class="rcard blue">
           <div class="rcard-label">Cdyn (ml/cmH₂O)</div>
-          <div style="font-size:12px;color:var(--text2);margin:6px 0 8px;">VT ÷ (PIP − PEEP) = <span id="pre-cdyn-val" style="font-weight:600;color:var(--accent-text);">—</span></div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">TVmeasure to calculate</div>
+          <div style="font-size:12px;color:var(--text2);margin:4px 0 8px;">VT ÷ (PIP − PEEP) = <span id="pre-cdyn-val" style="font-weight:600;color:var(--accent-text);">—</span></div>
           <div style="display:flex;align-items:center;gap:6px;">
             <span style="font-size:11px;color:var(--text2);">或直接輸入：</span>
             <input type="number" id="pre-cdyn" placeholder="覆蓋"
@@ -698,7 +700,7 @@
         <span class="lbl">模式 </span><span class="param">PCV</span> &nbsp;|&nbsp;
         <span class="lbl">PC </span><span class="param">15 cmH₂O</span> &nbsp;|&nbsp;
         <span class="lbl">RR </span><span class="param">10 bpm</span> &nbsp;|&nbsp;
-        <span class="lbl">I:E </span><span class="param">1:1（Ti 3 sec）</span> &nbsp;|&nbsp;
+        <span class="lbl">I:E </span><span class="param">1:1（Ti 3.0 sec）</span> &nbsp;|&nbsp;
         <span class="lbl">FiO₂ </span><span class="param">100%</span>
       </div>
       <div class="field">
@@ -822,7 +824,7 @@
         <span class="lbl">模式 </span><span class="param">PCV</span> &nbsp;|&nbsp;
         <span class="lbl">PC </span><span class="param">15 cmH₂O</span> &nbsp;|&nbsp;
         <span class="lbl">RR </span><span class="param">10 bpm</span> &nbsp;|&nbsp;
-        <span class="lbl">I:E </span><span class="param">1:1（Ti 3 sec）</span> &nbsp;|&nbsp;
+        <span class="lbl">I:E </span><span class="param">1:1（Ti 3.0 sec）</span> &nbsp;|&nbsp;
         <span class="lbl">FiO₂ </span><span class="param">維持 SpO₂ &gt; 90%</span>
       </div>
       <div style="display:flex;gap:14px;align-items:stretch;margin-bottom:4px;">
@@ -861,46 +863,38 @@
       <div class="step-badge">S6</div>
       <div>
         <div class="step-title">Diagnosis for individualized PEEP</div>
-        <div class="step-desc">OD/CL crossing point + ΔEELI 趨勢分析</div>
+        <div class="step-desc">OD/CL crossing point</div>
       </div>
     </div>
     <div class="step-body">
-      <div class="mode-box">調整回原本的呼吸模式，開啟 <span class="param">EIT Diagnosis view</span> 及 <span class="param">ΔEELI-trend view</span>。</div>
-
+      <div class="mode-box">調整回原本的呼吸模式，開啟 <span class="param">EIT Diagnosis view</span>。</div>
+      <div class="alert blue" style="margin-bottom:12px;">
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div>① 於&nbsp;<strong>Decremental PEEP trial</strong> 階段，依照不同 PEEP 值設置 analysis 的標記點。</div>
+          <div>② 依照 analysis result，選擇 <span style="color:#ea580c;font-weight:600;">橘色訊號（C loss HP）</span> 與 <span style="color:#4b5563;font-weight:600;">白色訊號（C loss LP）</span> 的交錯點，即為 individualized PEEP。</div>
+        </div>
+      </div>
       <div class="section-label">訊號判讀說明</div>
       <div class="eit-legend">
-        <span class="dot orange"></span><strong style="color:#ea580c;">橘色 C loss HP</strong>：PEEP 過高 → compliance ↓ → <strong>過度膨脹（Overdistension）</strong><br>
-        <span class="dot gray"></span><strong style="color:#4b5563;">白色 C loss LP</strong>：PEEP 過低 → compliance ↓ → <strong>塌陷（Lung collapse）</strong><br>
-        <span class="dot gold"></span><strong style="color:#b45309;">交錯點（Crossing point）</strong>：最少 overdistension &amp; 最少 collapse = 最佳 PEEP
+        <span class="dot orange"></span><strong style="color:#ea580c;">橘色訊號（C loss HP）</strong>：PEEP 增加，compliance 變不好 → <strong>Overdistension</strong><br>
+        <span class="dot gray"></span><strong style="color:#4b5563;">白色訊號（C loss LP）</strong>：PEEP 降低，compliance 變不好 → <strong>Lung collapse</strong><br>
+        <span class="dot gold"></span><strong style="color:#b45309;">交錯點（Crossing point）</strong>：以最少 VILI 為原則，最少 overdistension &amp; 最少 collapse 的 PEEP 值
       </div>
-      <div class="alert blue" style="margin-bottom:16px;">
-        在 ΔEELI-trend view 中，觀察 Decremental trial 階段 ΔEELI 變化量最大的 PEEP 值，即為 <span style="font-weight:600;">UIP</span>。最終 PEEP 應介於 <span style="font-weight:600;">AOP</span> 與 <span style="font-weight:600;">UIP</span> 之間，並確認 ΔEELI 在此 PEEP 維持穩定。
-      </div>
-      <div class="alert green" style="margin-bottom:16px;">
-        <strong>Record</strong> ΔEELI during Incremental &amp; Decremental PEEP trial、Crossing PEEP point（OD/CL method）
-      </div>
-
       <div class="field-row">
         <div class="field">
-          <label class="field-label">Crossing point 最佳 PEEP (cmH₂O)</label>
+          <label class="field-label">Crossing point individualized PEEP (cmH₂O)</label>
           <input type="number" id="optimal-peep" placeholder="由 EIT 判讀後輸入" oninput="calc()">
         </div>
-        <div class="field">
-          <label class="field-label">ΔEELI 判讀 UIP (cmH₂O)　可選填</label>
-          <input type="number" id="uip-input" placeholder="可選填" oninput="calc()">
-        </div>
       </div>
-
       <div id="final-box" class="final-optimal">
-        <div class="final-optimal-label">EIT 建議最佳 PEEP</div>
+        <div class="final-optimal-label">EIT 建議 individualized PEEP</div>
         <div class="final-optimal-val" id="final-val">—</div>
         <div class="final-optimal-unit">cmH₂O</div>
         <div class="final-note" id="final-note"></div>
       </div>
-
       <div id="lpv-box" class="alert green hidden">
-        <strong>回復原模式，依 EIT-guided individual PEEP 調整</strong>
-        PC level ≤ 15 cmH₂O，或 VC target 4–6 ml/kg-PBW（= <span id="lpv-vt">依 PBW 計算</span>）。持續觀察 ΔEELI 在設定 PEEP 下應維持穩定。
+        <strong>回復原模式，依 EIT-guided individualized PEEP 調整</strong>
+        PC level ≤ 15 cmH₂O，或 VC target 4–6 ml/kg-PBW（= <span id="lpv-vt">依 PBW 計算</span>）。
       </div>
     </div>
   </div>
@@ -911,7 +905,7 @@
       <div class="step-badge prep">POST</div>
       <div>
         <div class="step-title">操作後呼吸器參數記錄</div>
-        <div class="step-desc">調整 PEEP 後 5 分鐘測量參數；1 小時後追蹤 ABG</div>
+        <div class="step-desc">調整 PEEP 後 5 分鐘：Pplat（Square waveform, iHold 2 sec）、Cstat、Cdyn、ΔEELI（EIT）；1 小時後追蹤 ABG（P/F ratio）</div>
       </div>
     </div>
     <div class="step-body">
@@ -963,7 +957,8 @@
       <div id="post-comp-row" class="result-row">
         <div class="rcard green">
           <div class="rcard-label">Cstat (ml/cmH₂O)</div>
-          <div style="font-size:12px;color:var(--text2);margin:6px 0 8px;">VT ÷ (Pplat − PEEP) = <span id="post-cstat-val" style="font-weight:600;color:var(--green-text);">—</span></div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">TVmeasure to calculate</div>
+          <div style="font-size:12px;color:var(--text2);margin:4px 0 8px;">VT ÷ (Pplat − PEEP) = <span id="post-cstat-val" style="font-weight:600;color:var(--green-text);">—</span></div>
           <div style="display:flex;align-items:center;gap:6px;">
             <span style="font-size:11px;color:var(--text2);">或直接輸入：</span>
             <input type="number" id="post-cstat" placeholder="覆蓋"
@@ -972,7 +967,8 @@
         </div>
         <div class="rcard green">
           <div class="rcard-label">Cdyn (ml/cmH₂O)</div>
-          <div style="font-size:12px;color:var(--text2);margin:6px 0 8px;">VT ÷ (PIP − PEEP) = <span id="post-cdyn-val" style="font-weight:600;color:var(--green-text);">—</span></div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">TVmeasure to calculate</div>
+          <div style="font-size:12px;color:var(--text2);margin:4px 0 8px;">VT ÷ (PIP − PEEP) = <span id="post-cdyn-val" style="font-weight:600;color:var(--green-text);">—</span></div>
           <div style="display:flex;align-items:center;gap:6px;">
             <span style="font-size:11px;color:var(--text2);">或直接輸入：</span>
             <input type="number" id="post-cdyn" placeholder="覆蓋"
@@ -1432,21 +1428,14 @@
 
   function calcFinal() {
     const op = parseFloat(document.getElementById('optimal-peep').value);
-    const uip = parseFloat(document.getElementById('uip-input').value);
     const box = document.getElementById('final-box');
     const lpv = document.getElementById('lpv-box');
     if (isNaN(op)) { box.style.display = 'none'; lpv.classList.add('hidden'); return; }
     document.getElementById('final-val').textContent = op;
-    let note = '';
-    if (state.aop && !isNaN(uip)) {
-      const ok = op >= state.aop && op <= uip;
-      note = 'AOP = ' + state.aop + ' cmH₂O　UIP = ' + uip + ' cmH₂O　→ ' + (ok ? '✓ PEEP 落在有效範圍內' : '⚠ 建議落在 AOP–UIP 之間，請再確認');
-    } else if (state.aop) {
-      note = 'AOP = ' + state.aop + ' cmH₂O　PEEP 應 ≥ AOP';
-    }
-    document.getElementById('final-note').textContent = note;
+    document.getElementById('final-note').textContent = state.aop ? 'AOP = ' + state.aop + ' cmH₂O　PEEP 應 ≥ AOP' : '';
     box.style.display = 'block';
     lpv.classList.remove('hidden');
+    document.getElementById('lpv-vt').textContent = Math.round(state.pbw*4) + '–' + Math.round(state.pbw*6) + ' ml';
   }
 
   function updateProgress() {
@@ -1585,7 +1574,7 @@
       riVal || '', riJudge,
       gv('peep-start'),
       document.getElementById('s3-side-effect')?.value || '',
-      gv('optimal-peep'), gv('uip-input'),
+      gv('optimal-peep'),
       gv('post-pplat'), gv('post-pip'), gv('post-peep'), gv('post-eeli'),
       document.getElementById('post-cstat-val')?.textContent.trim() || '',
       document.getElementById('post-cdyn-val')?.textContent.trim() || '',
@@ -1600,7 +1589,7 @@
       'TV_PH','First exhaled TV','PEEPlow Pplat','VT_PL',
       'Crs','Crec','R/I ratio','判斷',
       'S3起始PEEP','副作用記錄',
-      'Crossing PEEP','UIP',
+      'Crossing PEEP',
       'POST Pplat','POST PIP','POST PEEP','POST ΔEELI','POST Cstat','POST Cdyn','POST P/F'
     ];
 
@@ -1699,7 +1688,7 @@
       [],
       // Step 6
       ['【Step 6 — EIT Diagnosis】'],
-      ['Crossing point 最佳 PEEP (cmH₂O)', gv('optimal-peep'), 'UIP (cmH₂O)', gv('uip-input')],
+      ['Crossing point individualized PEEP (cmH₂O)', gv('optimal-peep'), '', ''],
       ['AOP (ΔEELI) (cmH₂O)', gv('aop-raw'), '', ''],
       [],
       // 操作後 5 分鐘

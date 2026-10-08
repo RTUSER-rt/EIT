@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -501,8 +500,13 @@
           <input type="number" id="pre-pplat" placeholder="例：22" oninput="calcPreComp()">
         </div>
         <div class="field">
+          <label class="field-label">VT measure (ml) <span style="font-weight:400;font-size:10px;color:var(--text3);">測 Pplat 時的 VT</span></label>
+          <input type="number" id="pre-vt-measure" placeholder="例：480" oninput="calcPreComp()">
+        </div>
+        <div class="field">
           <label class="field-label">操作前 PIP (cmH₂O)</label>
-          <input type="number" id="pre-pip" placeholder="例：26" oninput="calcPreComp()">        </div>
+          <input type="number" id="pre-pip" placeholder="例：26" oninput="calcPreComp()">
+        </div>
       </div>
       <div class="field-row">
         <div class="field">
@@ -517,8 +521,8 @@
       <div id="pre-comp-row" class="result-row">
         <div class="rcard blue">
           <div class="rcard-label">Cstat (ml/cmH₂O)</div>
-          <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">TVmeasure to calculate</div>
-          <div style="font-size:12px;color:var(--text2);margin:4px 0 8px;">VT ÷ (Pplat − PEEP) = <span id="pre-cstat-val" style="font-weight:600;color:var(--accent-text);">—</span></div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">TVmeasure ÷ (Pplat − PEEP)</div>
+          <div style="font-size:12px;color:var(--text2);margin:4px 0 8px;">= <span id="pre-cstat-val" style="font-weight:600;color:var(--accent-text);">—</span></div>
           <div style="display:flex;align-items:center;gap:6px;">
             <span style="font-size:11px;color:var(--text2);">或直接輸入：</span>
             <input type="number" id="pre-cstat" placeholder="覆蓋"
@@ -527,8 +531,8 @@
         </div>
         <div class="rcard blue">
           <div class="rcard-label">Cdyn (ml/cmH₂O)</div>
-          <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">TVmeasure to calculate</div>
-          <div style="font-size:12px;color:var(--text2);margin:4px 0 8px;">VT ÷ (PIP − PEEP) = <span id="pre-cdyn-val" style="font-weight:600;color:var(--accent-text);">—</span></div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">TVmeasure ÷ (PIP − PEEP)</div>
+          <div style="font-size:12px;color:var(--text2);margin:4px 0 8px;">= <span id="pre-cdyn-val" style="font-weight:600;color:var(--accent-text);">—</span></div>
           <div style="display:flex;align-items:center;gap:6px;">
             <span style="font-size:11px;color:var(--text2);">或直接輸入：</span>
             <input type="number" id="pre-cdyn" placeholder="覆蓋"
@@ -567,7 +571,7 @@
         <div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:6px;">各機型操作方式</div>
         <div><span style="font-weight:600;color:var(--accent-text);">PB840：</span>P-V loop 視窗按 Freeze，旋鈕移動尋找轉折點</div>
         <div><span style="font-weight:600;color:var(--accent-text);">Servo-C：</span>flow pattern 100，waveform view 按錄影，完成後進入 Recording，旋鈕移動尋找 P-T waveform 下 flow rate 5 L/min 時的轉折點</div>
-        <div><span style="font-weight:600;color:var(--accent-text);">G5：</span>flow rate 依公式計算，waveform view 按 Freeze，旋鈕移動尋找 P-T waveform 下 flow rate 5 L/min 時的轉折點</div>
+        <div><span style="font-weight:600;color:var(--accent-text);">G5：</span>flow rate 依公式計算，waveform view 按 Freeze，旋鈕移動尋找 P-T waveform 下 flow rate 5 L/min 時的轉折點<br><span style="color:var(--text3);font-size:11px;padding-left:2em;">※ VCV，RR 1 bpm，Flow 5 L/min；Ti（sec）= VT ÷ 83.33　→　<span id="g5-ti-val" style="font-weight:600;color:var(--accent-text);">請先輸入 VT set</span></span></div>
       </div>
       <div class="field">
         <label class="field-label">量測到的 AOP (cmH₂O)　若無轉折點請輸入 5</label>
@@ -941,6 +945,10 @@
           <input type="number" id="post-pplat" placeholder="例：22" oninput="calcPostComp()">
         </div>
         <div class="field">
+          <label class="field-label">VT measure (ml) <span style="font-weight:400;font-size:10px;color:var(--text3);">測 Pplat 時的 VT</span></label>
+          <input type="number" id="post-vt-measure" placeholder="例：480" oninput="calcPostComp()">
+        </div>
+        <div class="field">
           <label class="field-label">PIP (cmH₂O)</label>
           <input type="number" id="post-pip" placeholder="例：26" oninput="calcPostComp()">
         </div>
@@ -950,16 +958,12 @@
           <label class="field-label">PEEP (cmH₂O)</label>
           <input type="number" id="post-peep" placeholder="例：10" oninput="calcPostComp()">
         </div>
-        <div class="field">
-          <label class="field-label">ΔEELI (EIT)</label>
-          <input type="number" id="post-eeli" placeholder="例：150" oninput="calcPost()">
-        </div>
       </div>
       <div id="post-comp-row" class="result-row">
         <div class="rcard green">
           <div class="rcard-label">Cstat (ml/cmH₂O)</div>
-          <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">TVmeasure to calculate</div>
-          <div style="font-size:12px;color:var(--text2);margin:4px 0 8px;">VT ÷ (Pplat − PEEP) = <span id="post-cstat-val" style="font-weight:600;color:var(--green-text);">—</span></div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">TVmeasure ÷ (Pplat − PEEP)</div>
+          <div style="font-size:12px;color:var(--text2);margin:4px 0 8px;">= <span id="post-cstat-val" style="font-weight:600;color:var(--green-text);">—</span></div>
           <div style="display:flex;align-items:center;gap:6px;">
             <span style="font-size:11px;color:var(--text2);">或直接輸入：</span>
             <input type="number" id="post-cstat" placeholder="覆蓋"
@@ -968,8 +972,8 @@
         </div>
         <div class="rcard green">
           <div class="rcard-label">Cdyn (ml/cmH₂O)</div>
-          <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">TVmeasure to calculate</div>
-          <div style="font-size:12px;color:var(--text2);margin:4px 0 8px;">VT ÷ (PIP − PEEP) = <span id="post-cdyn-val" style="font-weight:600;color:var(--green-text);">—</span></div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">TVmeasure ÷ (PIP − PEEP)</div>
+          <div style="font-size:12px;color:var(--text2);margin:4px 0 8px;">= <span id="post-cdyn-val" style="font-weight:600;color:var(--green-text);">—</span></div>
           <div style="display:flex;align-items:center;gap:6px;">
             <span style="font-size:11px;color:var(--text2);">或直接輸入：</span>
             <input type="number" id="post-cdyn" placeholder="覆蓋"
@@ -1069,7 +1073,18 @@
     document.getElementById('s2-vt').textContent = state.vt;
     document.getElementById('s4-vt').textContent = state.vt;
     document.getElementById('lpv-vt').textContent = Math.round(state.pbw*4) + '–' + Math.round(state.pbw*6) + ' ml';
-    calcPreComp(); calcPostComp(); syncS3PEEP();
+    calcPreComp(); calcPostComp(); syncS3PEEP(); updateG5Ti();
+  }
+
+  function updateG5Ti() {
+    const vt = getVT();
+    const el = document.getElementById('g5-ti-val');
+    if (!el) return;
+    if (vt && vt > 0) {
+      el.textContent = 'Ti = ' + (vt / 83.33).toFixed(1) + ' 秒';
+    } else {
+      el.textContent = '請先輸入 VT set';
+    }
   }
 
   function calcAOP() {
@@ -1147,7 +1162,7 @@
     const pplat = parseFloat(document.getElementById('pre-pplat').value);
     const pip   = parseFloat(document.getElementById('pre-pip').value);
     const peep  = parseFloat(document.getElementById('pre-peep').value);
-    const vt    = getVT();
+    const vt    = parseFloat(document.getElementById('pre-vt-measure').value) || null;
     if (vt && !isNaN(pplat) && !isNaN(peep) && (pplat - peep) > 0) {
       document.getElementById('pre-cstat-val').textContent = (vt / (pplat - peep)).toFixed(1);
     } else { document.getElementById('pre-cstat-val').textContent = '—'; }
@@ -1160,7 +1175,7 @@
     const pplat = parseFloat(document.getElementById('post-pplat').value);
     const pip   = parseFloat(document.getElementById('post-pip').value);
     const peep  = parseFloat(document.getElementById('post-peep').value);
-    const vt    = getVT();
+    const vt    = parseFloat(document.getElementById('post-vt-measure').value) || null;
     if (vt && !isNaN(pplat) && !isNaN(peep) && (pplat - peep) > 0) {
       document.getElementById('post-cstat-val').textContent = (vt / (pplat - peep)).toFixed(1);
     } else { document.getElementById('post-cstat-val').textContent = '—'; }
@@ -1531,6 +1546,7 @@
     postTimerUpdate();
     swUpdateDisplay();
     document.getElementById('op-date').value = new Date().toISOString().slice(0,10);
+    updateG5Ti();
   });
 
   // ── Google Sheets Export ──
@@ -1568,6 +1584,7 @@
       gv('height'), sex, state.pbw ? parseFloat(state.pbw.toFixed(1)) : '',
       gv('vt-actual'),
       gv('pre-pplat'), gv('pre-pip'), gv('pre-peep'), gv('pre-pf'),
+      gv('pre-vt-measure'),
       gv('aop-raw'),
       gv('tv-ph'), gv('dvrec'), gv('pplat'), gv('tv-low'),
       document.getElementById('crs-val')?.textContent.trim() || '',
@@ -1576,7 +1593,8 @@
       gv('peep-start'),
       document.getElementById('s3-side-effect')?.value || '',
       gv('optimal-peep'),
-      gv('post-pplat'), gv('post-pip'), gv('post-peep'), gv('post-eeli'),
+      gv('post-pplat'), gv('post-pip'), gv('post-peep'),
+      gv('post-vt-measure'),
       document.getElementById('post-cstat-val')?.textContent.trim() || '',
       document.getElementById('post-cdyn-val')?.textContent.trim() || '',
       gv('post-pf')
@@ -1585,13 +1603,13 @@
     // Check if header row exists, if not add it first
     const headers = [
       '匯出時間','病歷號','操作日期','身高(cm)','性別','PBW(kg)','實際VT(ml)',
-      'PRE Pplat','PRE PIP','PRE PEEP','PRE P/F',
+      'PRE Pplat','PRE PIP','PRE PEEP','PRE P/F','PRE VT measure',
       'AOP',
       'TV_PH','First exhaled TV','PEEPlow Pplat','VT_PL',
       'Crs','Crec','R/I ratio','判斷',
       'S3起始PEEP','副作用記錄',
       'Crossing PEEP',
-      'POST Pplat','POST PIP','POST PEEP','POST ΔEELI','POST Cstat','POST Cdyn','POST P/F'
+      'POST Pplat','POST PIP','POST PEEP','POST VT measure','POST Cstat','POST Cdyn','POST P/F'
     ];
 
     // First check if sheet is empty
@@ -1665,6 +1683,7 @@
       ['【操作前記錄】'],
       ['Pplat (cmH₂O)', gv('pre-pplat'), 'PIP (cmH₂O)', gv('pre-pip')],
       ['PEEP (cmH₂O)', gv('pre-peep'), 'P/F ratio', gv('pre-pf')],
+      ['VT measure (ml)', gv('pre-vt-measure'), '', ''],
       ['Cstat (ml/cmH₂O)', preCstat, 'Cdyn (ml/cmH₂O)', preCdyn],
       [],
       // Step 1
@@ -1695,7 +1714,8 @@
       // 操作後 5 分鐘
       ['【操作後 5 分鐘】'],
       ['Pplat (cmH₂O)', gv('post-pplat'), 'PIP (cmH₂O)', gv('post-pip')],
-      ['PEEP (cmH₂O)', gv('post-peep'), 'ΔEELI (EIT)', gv('post-eeli')],
+      ['PEEP (cmH₂O)', gv('post-peep'), '', ''],
+      ['VT measure (ml)', gv('post-vt-measure'), '', ''],
       ['Cstat (ml/cmH₂O)', postCstat, 'Cdyn (ml/cmH₂O)', postCdyn],
       [],
       // 操作後 1 小時

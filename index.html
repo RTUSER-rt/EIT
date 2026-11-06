@@ -571,7 +571,7 @@
         <div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:6px;">各機型操作方式</div>
         <div><span style="font-weight:600;color:var(--accent-text);">PB840：</span>P-V loop 視窗按 Freeze，旋鈕移動尋找轉折點</div>
         <div><span style="font-weight:600;color:var(--accent-text);">Servo-C：</span>flow pattern 100，waveform view 按錄影，完成後進入 Recording，旋鈕移動尋找 P-T waveform 下 flow rate 5 L/min 時的轉折點</div>
-        <div><span style="font-weight:600;color:var(--accent-text);">G5：</span>flow rate 依公式計算，waveform view 按 Freeze，旋鈕移動尋找 P-T waveform 下 flow rate 5 L/min 時的轉折點<br><span style="color:var(--text3);font-size:11px;padding-left:2em;">※ VCV，RR 1 bpm，Flow 5 L/min；Ti（sec）= VT ÷ 83.33　→　<span id="g5-ti-val" style="font-weight:600;color:var(--accent-text);">請先輸入 VT set</span></span></div>
+        <div><span style="font-weight:600;color:var(--accent-text);">G5：</span>flow rate 依公式計算，waveform view 按 Freeze，旋鈕移動尋找 P-T waveform 下 flow rate 5 L/min 時的轉折點<br><span style="color:var(--text3);font-size:11px;padding-left:2em;">※ VCV，RR 5 bpm，Flow 5 L/min；Ti（sec）= VT ÷ 83.33　→　<span id="g5-ti-val" style="font-weight:600;color:var(--accent-text);">請先輸入 VT set</span></span></div>
       </div>
       <div class="field">
         <label class="field-label">量測到的 AOP (cmH₂O)　若無轉折點請輸入 5</label>
@@ -1052,7 +1052,7 @@
   }
 
   function calc() {
-    calcPBW(); calcAOP(); calcRI(); calcPEEPSeq(); calcFinal(); updateProgress();
+    calcPBW(); calcAOP(); calcRI(); calcPEEPSeq(); calcFinal(); updateProgress(); updateG5Ti();
   }
 
   function calcPBW() {
